@@ -39,10 +39,10 @@ function httpGetJsonAll_(urls, concurrency, maxAttempts) {
           if (r.code === 429) saw429 = true;
         }
       }
-      if (saw429) Utilities.sleep(3000);
+      if (saw429) { Utilities.sleep(2000); saw429 = false; }
     }
     pending = retry;
-    if (pending.length) Utilities.sleep(Math.min(30000, 2000 * Math.pow(2, attempt)) + (saw429 ? 5000 : 0));
+    if (pending.length) Utilities.sleep(Math.min(20000, 1500 * Math.pow(2, attempt - 1)));
   }
   return results;
 }

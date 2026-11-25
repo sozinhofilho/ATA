@@ -191,34 +191,37 @@ function timeLeft_() { return NR.MAX_RUN_MS - (Date.now() - EXEC_START_); }
 function runCollect_(st, cfg, store, now) {
   var matcher = loadProductCatalog();
   var units = pncpUnits_(st.plan);
-  var batch = cfg.concurrency * 2;
+  var batch = cfg.concurrency * 3;
+  // st.extra: páginas adicionais pendentes, compactadas como [indiceUnidade, dePagina, atePagina].
+  st.extra = st.extra || [];
   while (timeLeft_() > 60000) {
-    var unit = units[st.unitIdx];
-    if (!unit) { st.phase = 'refresh'; break; }
-    var pages;
-    if (st.totalPages == null) pages = [1];
-    else {
-      pages = [];
-      for (var p = st.page; p <= st.totalPages && pages.length < batch; p++) pages.push(p);
+    // Monta um lote: primeiro páginas adicionais pendentes, depois a página 1 das próximas unidades.
+    var reqs = [];
+    while (reqs.length < batch && st.extra.length) {
+      var e = st.extra[0];
+      reqs.push({ u: e[0], p: e[1] });
+      if (e[1] >= e[2]) st.extra.shift(); else e[1]++;
     }
-    var res = pages.length ? fetchPNCP(unit, pages, cfg.concurrency) : [];
+    while (reqs.length < batch && st.unitIdx < units.length) reqs.push({ u: st.unitIdx++, p: 1 });
+    if (!reqs.length) { st.phase = 'refresh'; break; }
+    var res = httpGetJsonAll_(reqs.map(function (q) { return pncpUnitUrl_(units[q.u], q.p); }), cfg.concurrency);
     var recs = [];
     res.forEach(function (r, i) {
+      var q = reqs[i];
       if (r.ok) {
         st.stats.paginas++;
         if (r.data && Array.isArray(r.data.data)) {
-          if (st.totalPages == null) st.totalPages = r.data.totalPaginas || 1;
           recs = recs.concat(r.data.data);
-        } else if (st.totalPages == null) st.totalPages = 0; // 204: sem registros
+          var total = r.data.totalPaginas || 1;
+          if (q.p === 1 && total > 1) st.extra.push([q.u, 2, total]);
+        }
       } else {
         st.stats.paginasFalha++;
-        pushErr_(st, 'PNCP ' + unitLabel_(unit) + ' pág. ' + pages[i] + ': ' + r.error);
-        if (st.totalPages == null) st.totalPages = 0; // não foi possível nem a 1ª página
+        pushErr_(st, 'PNCP ' + unitLabel_(units[q.u]) + ' pág. ' + q.p + ': ' + r.error);
       }
     });
     processRecords_(st, cfg, store, matcher, recs, now);
-    st.page = pages.length ? pages[pages.length - 1] + 1 : 1;
-    if (st.page > st.totalPages) { st.unitIdx++; st.page = 1; st.totalPages = null; }
+    st.page = st.extra.length;  // apenas informativo (páginas pendentes)
     saveState_(st);
   }
 }

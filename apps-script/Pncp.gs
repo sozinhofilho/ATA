@@ -12,6 +12,10 @@
  */
 
 var PNCP_PAGE_SIZE = 50;
+// Consultas divididas por UF: páginas profundas do PNCP são lentas (~10 s cada após a página 100),
+// enquanto as primeiras páginas respondem em ~1 s.
+var ALL_UFS = ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 'MT', 'PA', 'PB', 'PE',
+  'PI', 'PR', 'RJ', 'RN', 'RO', 'RR', 'RS', 'SC', 'SE', 'SP', 'TO'];
 
 function ymd_(d) { return Utilities.formatDate(d, NR.TZ, 'yyyyMMdd'); }
 
@@ -37,7 +41,7 @@ function pncpUnitUrl_(unit, page) {
  */
 function pncpUnits_(plan) {
   var units = [];
-  var ufs = plan.ufs.length ? plan.ufs : [''];
+  var ufs = plan.ufs.length ? plan.ufs : ALL_UFS;
   if (plan.includeProposta) {
     // dataFinal = limite do prazo de encerramento; 12 meses à frente cobre todas as propostas abertas.
     ufs.forEach(function (uf) { units.push({ type: 'prop', dataFinal: plan.propTo || plan.to, uf: uf }); });
