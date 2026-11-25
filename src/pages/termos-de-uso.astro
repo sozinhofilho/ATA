@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import Field from '../components/Field.astro';
+import { marca, empresa, config, contato } from '../lib/site';
+import { breadcrumbLd } from '../lib/seo';
+---
+<BaseLayout
+  title="Termos de Uso"
+  description={`Condições de uso do site ${marca.nome}: natureza informativa do catálogo, limites das informações publicadas e responsabilidades.`}
+  jsonLd={[breadcrumbLd([{ label: 'Termos de Uso', href: '/termos-de-uso/' }])]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumb items={[{ label: 'Termos de Uso' }]} />
+      <h1>Termos de Uso</h1>
+      <p>Última atualização: 25/11/2026.</p>
+    </div>
+  </section>
+  <div class="container section">
+    <article class="prose">
+      <h2>1. Sobre o site</h2>
+      <p>Este site é mantido por <Field value={empresa.razaoSocial} label="razão social" /> (CNPJ <Field value={empresa.cnpj} label="CNPJ" />), sob o nome {marca.nome}. {config.aviso} O site não é portal governamental, não realiza licitações e não representa qualquer órgão público.</p>
+
+      <h2>2. Natureza das informações</h2>
+      <ul>
+        <li>O catálogo tem finalidade de divulgação comercial e apresentação de produtos. Não há venda, pagamento ou checkout online.</li>
+        <li>Especificações, disponibilidade, prazos, garantias e condições de fornecimento dependem de confirmação pelo fabricante ou fornecedor e podem mudar sem aviso.</li>
+        <li>Imagens identificadas como ilustrativas ou esquemáticas não representam necessariamente o modelo comercializado.</li>
+        <li>A indicação de atas de registro de preços não garante a possibilidade de adesão, que depende de vigência, saldo, compatibilidade do objeto, anuências e requisitos legais aplicáveis.</li>
+        <li>Os conteúdos sobre contratações públicas são informativos e não constituem orientação jurídica. As decisões de contratação cabem exclusivamente ao órgão público.</li>
+      </ul>
+
+      <h2>3. Uso adequado</h2>
+      <p>É vedado utilizar o site para fins ilícitos, tentar acessar áreas ou arquivos não públicos, interferir em seu funcionamento ou coletar dados de forma automatizada para fins abusivos.</p>
+
+      <h2>4. Propriedade intelectual</h2>
+      <p>Textos, marca, layout e ilustrações deste site pertencem aos seus titulares. Marcas, nomes e fotografias de fabricantes são de propriedade dos respectivos titulares e são exibidos somente com autorização.</p>
+
+      <h2>5. Links externos</h2>
+      <p>O site contém links para fontes oficiais e serviços de terceiros (como PNCP e WhatsApp). Não nos responsabilizamos pelo conteúdo ou pelas políticas desses sites.</p>
+
+      <h2>6. Privacidade</h2>
+      <p>O tratamento de dados pessoais está descrito na <a href="/politica-de-privacidade/">Política de Privacidade</a>.</p>
+
+      <h2>7. Contato e foro</h2>
+      <p>Dúvidas sobre estes termos: <a href={`mailto:${contato.email}`}>{contato.email}</a>. Fica eleito o foro da comarca de <Field value={empresa.cidadeUf} label="cidade/UF da sede" />, observada a legislação aplicável.</p>
+    </article>
+  </div>
+</BaseLayout>

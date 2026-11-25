@@ -1,0 +1,14 @@
+---
+// Espaço reservado visível SOMENTE em homologação. Em produção não é renderizado.
+import { IS_PRODUCTION } from '../lib/site';
+interface Props { label: string }
+const { label } = Astro.props;
+---
+{!IS_PRODUCTION && (
+  <div class="pending" role="note">
+    <strong>Espaço reservado:</strong> {label}. Preencher somente com informações confirmadas (não exibido na versão de produção).
+  </div>
+)}
+<style>
+  .pending { border: 2px dashed #e0c27a; background: var(--c-warn-bg); color: var(--c-warn-text); border-radius: var(--radius); padding: var(--sp-4); font-size: var(--fs-sm); margin-bottom: var(--sp-4); }
+</style>

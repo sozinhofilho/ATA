@@ -1,0 +1,140 @@
+---
+// Formulário sem servidor: os dados NÃO são enviados nem armazenados pelo site.
+// Ao enviar, o texto é montado no navegador e aberto no WhatsApp ou no aplicativo de e-mail do visitante,
+// que revisa e decide se envia. Sem credenciais no código, sem serviços externos.
+import Icon from './Icon.astro';
+import { contato, marca } from '../lib/site';
+interface Props { id: string; variant?: 'contato' | 'ata'; defaultInterest?: string }
+const { id, variant = 'contato', defaultInterest = '' } = Astro.props;
+const UFS = 'AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO'.split(' ');
+const interesses = ['Consulta de atas de registro de preços', 'Proposta para produto específico', 'Documentação técnica', 'Lista completa de equipamentos', 'Outro assunto'];
+const numero = String(contato.whatsapp).replace(/\D/g, '');
+---
+<form class="lead" id={id} novalidate data-lead-form data-variant={variant} data-wa={numero} data-email={contato.email} data-brand={marca.nome}>
+  <div class="lead__grid">
+    <div class="field">
+      <label for={`${id}-nome`}>Nome <span aria-hidden="true">*</span></label>
+      <input class="input" id={`${id}-nome`} name="nome" autocomplete="name" required maxlength="80" aria-describedby={`${id}-nome-err`} />
+      <span class="field-error" id={`${id}-nome-err`} hidden>Informe seu nome.</span>
+    </div>
+    <div class="field">
+      <label for={`${id}-orgao`}>Órgão ou instituição <span aria-hidden="true">*</span></label>
+      <input class="input" id={`${id}-orgao`} name="orgao" autocomplete="organization" required maxlength="120" aria-describedby={`${id}-orgao-err`} />
+      <span class="field-error" id={`${id}-orgao-err`} hidden>Informe o órgão ou instituição.</span>
+    </div>
+    <div class="field">
+      <label for={`${id}-municipio`}>Município <span aria-hidden="true">*</span></label>
+      <input class="input" id={`${id}-municipio`} name="municipio" autocomplete="address-level2" required maxlength="80" aria-describedby={`${id}-municipio-err`} />
+      <span class="field-error" id={`${id}-municipio-err`} hidden>Informe o município.</span>
+    </div>
+    <div class="field">
+      <label for={`${id}-uf`}>Estado (UF) <span aria-hidden="true">*</span></label>
+      <select class="select" id={`${id}-uf`} name="uf" required aria-describedby={`${id}-uf-err`}>
+        <option value="">Selecione</option>
+        {UFS.map((u) => <option value={u}>{u}</option>)}
+      </select>
+      <span class="field-error" id={`${id}-uf-err`} hidden>Selecione o estado.</span>
+    </div>
+    {variant === 'contato' && (
+      <>
+        <div class="field">
+          <label for={`${id}-cargo`}>Cargo ou função</label>
+          <input class="input" id={`${id}-cargo`} name="cargo" autocomplete="organization-title" maxlength="80" />
+        </div>
+        <div class="field">
+          <label for={`${id}-email`}>E-mail institucional</label>
+          <input class="input" id={`${id}-email`} name="email" type="email" autocomplete="email" maxlength="120" aria-describedby={`${id}-email-err`} />
+          <span class="field-error" id={`${id}-email-err`} hidden>Informe um e-mail válido ou deixe em branco.</span>
+        </div>
+        <div class="field">
+          <label for={`${id}-telefone`}>Telefone</label>
+          <input class="input" id={`${id}-telefone`} name="telefone" type="tel" autocomplete="tel" maxlength="20" inputmode="tel" />
+        </div>
+        <div class="field">
+          <label for={`${id}-interesse`}>Interesse</label>
+          <select class="select" id={`${id}-interesse`} name="interesse">
+            {interesses.map((i) => <option value={i} selected={i === defaultInterest}>{i}</option>)}
+          </select>
+        </div>
+      </>
+    )}
+  </div>
+  <div class="field">
+    <label for={`${id}-mensagem`}>{variant === 'ata' ? 'Produtos e quantidades estimadas' : 'Mensagem'} <span aria-hidden="true">*</span></label>
+    <textarea class="textarea" id={`${id}-mensagem`} name="mensagem" required maxlength="2000" aria-describedby={`${id}-mensagem-hint ${id}-mensagem-err`}></textarea>
+    <span class="hint" id={`${id}-mensagem-hint`}>{variant === 'ata' ? 'Ex.: 10 camas Fowler, 4 carros maca, 2 desfibriladores (DEA).' : 'Descreva os equipamentos, quantidades ou a dúvida.'}</span>
+    <span class="field-error" id={`${id}-mensagem-err`} hidden>Descreva sua necessidade.</span>
+  </div>
+
+  <p class="lead__privacy"><Icon name="shield" size={18} /> <span>O site não armazena estes dados. Ao enviar, a mensagem é aberta no seu WhatsApp ou e-mail para que você revise e confirme o envio. Não informe CPF ou dados pessoais desnecessários. Veja a <a href="/politica-de-privacidade/">Política de Privacidade</a>.</span></p>
+
+  <div class="btn-row">
+    <button type="submit" class="btn btn--whatsapp" data-channel="whatsapp"><Icon name="whatsapp" /> Enviar pelo WhatsApp</button>
+    <button type="submit" class="btn btn--outline" data-channel="email"><Icon name="mail" /> Enviar por e-mail</button>
+  </div>
+  <p class="lead__status" role="status" aria-live="polite" data-status></p>
+</form>
+
+<script>
+  import { track } from '../scripts/analytics';
+  const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  document.querySelectorAll<HTMLFormElement>('[data-lead-form]').forEach((form) => {
+    let channel = 'whatsapp';
+    form.querySelectorAll<HTMLButtonElement>('button[data-channel]').forEach((b) => b.addEventListener('click', () => { channel = b.dataset.channel!; }));
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const setError = (el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement, bad: boolean) => {
+      el.setAttribute('aria-invalid', String(bad));
+      const err = document.getElementById(`${el.id}-err`);
+      if (err) err.hidden = !bad;
+    };
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input, select, textarea'));
+      let first: HTMLElement | null = null;
+      for (const el of fields) {
+        el.value = el.value.trim();
+        let bad = el.required && !el.value;
+        if (el.name === 'email' && el.value && !EMAIL.test(el.value)) bad = true;
+        setError(el, bad);
+        if (bad && !first) first = el;
+      }
+      if (first) { status.textContent = 'Verifique os campos destacados.'; first.focus(); return; }
+      const v = Object.fromEntries(new FormData(form)) as Record<string, string>;
+      const isAta = form.dataset.variant === 'ata';
+      const lines = [
+        isAta ? 'Olá! Gostaria de solicitar uma consulta de Ata de Registro de Preços.' : `Olá! Entro em contato pelo site da ${form.dataset.brand}.`,
+        '',
+        `Nome: ${v.nome}`,
+        v.cargo ? `Cargo/função: ${v.cargo}` : '',
+        `Órgão/instituição: ${v.orgao}`,
+        `Município/UF: ${v.municipio}/${v.uf}`,
+        v.email ? `E-mail: ${v.email}` : '',
+        v.telefone ? `Telefone: ${v.telefone}` : '',
+        v.interesse ? `Interesse: ${v.interesse}` : '',
+        '',
+        isAta ? `Produtos e quantidades: ${v.mensagem}` : v.mensagem,
+      ].filter((l, i, arr) => l !== '' || (arr[i - 1] !== '' && i > 0));
+      const text = lines.join('\n');
+      const subject = isAta ? `Consulta de ata — ${v.orgao} (${v.municipio}/${v.uf})` : `Contato pelo site — ${v.orgao}`;
+      const url = channel === 'email'
+        ? `mailto:${form.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`
+        : `https://wa.me/${form.dataset.wa}?text=${encodeURIComponent(text)}`;
+      // Somente o canal é enviado à mensuração; nenhum dado pessoal.
+      track('generate_lead', { method: channel, location: isAta ? 'formulario-ata' : 'formulario-contato' });
+      if (channel === 'whatsapp') track('whatsapp_click', { location: isAta ? 'formulario-ata' : 'formulario-contato' });
+      if (isAta) track('ata_request_click', { location: 'formulario-ata' });
+      status.textContent = channel === 'email' ? 'Abrindo seu aplicativo de e-mail com a mensagem preenchida…' : 'Abrindo o WhatsApp com a mensagem preenchida…';
+      form.dataset.lastUrl = url;
+      if (channel === 'email') window.location.href = url; else window.open(url, '_blank', 'noopener');
+    });
+  });
+</script>
+
+<style>
+  .lead { display: grid; gap: var(--sp-5); }
+  .lead__grid { display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
+  .field label span[aria-hidden] { color: #b42318; }
+  .lead__privacy { display: flex; gap: var(--sp-2); align-items: flex-start; font-size: var(--fs-xs); color: var(--c-gray-500); margin: 0; }
+  .lead__privacy :global(svg) { flex: none; color: var(--c-teal-dark); margin-top: 1px; }
+  .lead__status { margin: 0; font-size: var(--fs-sm); font-weight: 600; color: var(--c-navy); min-height: 1.4em; }
+</style>

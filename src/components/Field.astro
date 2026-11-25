@@ -1,0 +1,6 @@
+---
+// Exibe um dado institucional ou, se vazio, um marcador visível de pendência.
+interface Props { value?: string; label: string }
+const { value, label } = Astro.props;
+---
+{value ? <span>{value}</span> : <span class="placeholder-field">[{label} — a preencher]</span>}

@@ -1,0 +1,4 @@
+{
+  "_leia_me": "Cadastre aqui somente atas conferidas no PNCP (ou fonte oficial equivalente) e autorizadas para divulgação. Uma ata só aparece no site quando 'publicar' = true E a data de fim de vigência não passou. Veja docs/guia-atas.md. Não informe saldo, preços ou elegibilidade sem confirmação atualizada.",
+  "atas": []
+}

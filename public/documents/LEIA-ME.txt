@@ -1,0 +1,3 @@
+Coloque aqui somente documentos AUTORIZADOS para divulgação pública (fichas técnicas, manuais).
+Tudo nesta pasta fica acessível na internet. Nunca coloque contratos, propostas, planilhas de preço ou documentos com dados pessoais.
+Referencie no catálogo como /documents/nome-do-arquivo.pdf (colunas ficha_tecnica e manual).

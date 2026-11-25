@@ -1,0 +1,51 @@
+{
+  "_leia_me": "Arquivo central de configuração. Altere aqui nome, contatos e dados institucionais. Campos com valor vazio não são exibidos no site. Itens listados em 'provisorio' bloqueiam o build de produção (npm run build:production) até serem substituídos.",
+
+  "marca": {
+    "nome": "Nexus Hospitalar",
+    "nomeCaixaAlta": "NEXUS HOSPITALAR",
+    "complemento": "Soluções em Compras Públicas",
+    "slogan": "Soluções completas para equipar a saúde pública.",
+    "sloganSecundario": "Mobiliário e equipamentos hospitalares para instituições públicas de saúde.",
+    "descricaoCurta": "Intermediação comercial e apresentação de soluções em mobiliário e equipamentos médico-hospitalares para instituições públicas de saúde.",
+    "logo": "/images/marca/logo-horizontal.svg",
+    "logoNegativo": "/images/marca/logo-horizontal-negativo.svg",
+    "simbolo": "/images/marca/simbolo.svg",
+    "imagemCompartilhamento": "/og/nexus-hospitalar-og.png"
+  },
+
+  "site": {
+    "urlPadrao": "https://nexushospitalar.example",
+    "idioma": "pt-BR",
+    "localidade": "pt_BR"
+  },
+
+  "contato": {
+    "whatsapp": "5500000000000",
+    "whatsappExibicao": "(00) 00000-0000",
+    "email": "contato@nexushospitalar.example",
+    "telefone": "",
+    "telefoneExibicao": "",
+    "horarioAtendimento": "Segunda a sexta-feira, em horário comercial",
+    "encarregadoDadosEmail": ""
+  },
+
+  "empresa": {
+    "razaoSocial": "",
+    "cnpj": "",
+    "endereco": "",
+    "cidadeUf": "",
+    "linkedin": "",
+    "instagram": ""
+  },
+
+  "aviso": "A Nexus Hospitalar é uma empresa privada de atuação comercial e não integra a administração pública.",
+
+  "provisorio": {
+    "marca": true,
+    "whatsapp": true,
+    "email": true,
+    "dominio": true,
+    "dadosEmpresariais": true
+  }
+}

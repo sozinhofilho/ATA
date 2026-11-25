@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Icon from '../../components/Icon.astro';
+import { categories, products, inCategory, subcategoriesWithProducts, solutions } from '../../lib/catalog';
+import { breadcrumbLd, itemListLd, truncate } from '../../lib/seo';
+import { waLink, mensagens } from '../../lib/whatsapp';
+
+export function getStaticPaths() {
+  return categories.map((c) => ({ params: { slug: c.slug }, props: { category: c } }));
+}
+const { category: c } = Astro.props;
+const list = products
+  .filter((p) => inCategory(p, c.slug))
+  .sort((a, b) => Number(b.destaque) - Number(a.destaque) || a.nome.localeCompare(b.nome, 'pt-BR'));
+const subs = subcategoriesWithProducts(c);
+const relSolutions = solutions.filter((s) => s.categorias.includes(c.slug));
+const msg = mensagens.categoria(c.nome);
+---
+<BaseLayout
+  title={`${c.nome} para órgãos públicos`}
+  description={truncate(`${c.descricao} Consulte possibilidades de fornecimento por Ata de Registro de Preços.`)}
+  waMessage={msg}
+  jsonLd={[breadcrumbLd([{ label: 'Categorias', href: '/categorias/' }, { label: c.nome, href: `/categorias/${c.slug}/` }]), itemListLd(c.nome, list)]}
+>
+  <section class="page-hero">
+    <div class="container cat-hero">
+      <div>
+        <Breadcrumb items={[{ label: 'Categorias', href: '/categorias/' }, { label: c.nome }]} />
+        <h1>{c.nome}</h1>
+        <p>{c.descricao}</p>
+        <div class="btn-row cat-hero__cta">
+          <a href={waLink(msg)} class="btn btn--whatsapp" target="_blank" rel="noopener" data-track="whatsapp_click" data-track-location="categoria-topo" data-track-item-category={c.nome}><Icon name="whatsapp" /> Consultar esta categoria</a>
+          <a href={`/produtos/?categoria=${c.slug}`} class="btn btn--outline"><Icon name="filter" size={18} /> Filtrar no catálogo</a>
+        </div>
+      </div>
+      <img src={`/images/ilustracoes/${c.ilustracao}.svg`} alt="" width="240" height="160" class="cat-hero__img" />
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="lista-title">
+    <div class="container">
+      <div class="section-head">
+        <h2 id="lista-title">{list.length} {list.length === 1 ? 'produto publicado' : 'produtos publicados'}</h2>
+        {subs.length > 1 && (
+          <ul class="subs" aria-label="Subcategorias">
+            {subs.map((s) => <li><a href={`/produtos/?categoria=${c.slug}&subcategoria=${s.slug}`}>{s.nome} ({s.count})</a></li>)}
+          </ul>
+        )}
+      </div>
+      <div class="grid grid--products">
+        {list.map((p, i) => <ProductCard product={p} listName={`categoria-${c.slug}`} eager={i < 4} headingLevel="h3" />)}
+      </div>
+      {relSolutions.length > 0 && (
+        <aside class="rel-sol" aria-labelledby="relsol-title">
+          <h2 id="relsol-title">Soluções relacionadas</h2>
+          <ul>{relSolutions.map((s) => <li><a href={`/solucoes/${s.slug}/`}>{s.nome} <Icon name="chevron" size={16} /></a></li>)}</ul>
+        </aside>
+      )}
+    </div>
+  </section>
+
+  <CtaBand title={`Precisa de ${c.nome.toLowerCase()} para sua unidade?`} text="Converse com nossa equipe para identificar produtos, especificações e possibilidades de fornecimento." message={msg} location={`categoria-${c.slug}`} />
+</BaseLayout>
+
+<script>
+  import { track } from '../../scripts/analytics';
+  track('view_item_list', { item_list_name: document.querySelector('h1')?.textContent || 'categoria' });
+</script>
+
+<style>
+  .cat-hero { display: flex; gap: var(--sp-8); align-items: center; justify-content: space-between; }
+  .cat-hero__img { width: 260px; flex: none; }
+  @media (max-width: 767px) { .cat-hero__img { display: none; } }
+  .cat-hero__cta { margin-top: var(--sp-5); }
+  .subs { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .subs a { font-size: var(--fs-xs); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--c-gray-200); text-decoration: none; color: var(--c-navy); background: #fff; display: inline-block; }
+  .subs a:hover { border-color: var(--c-teal); }
+  .rel-sol { margin-top: var(--sp-12); }
+  .rel-sol h2 { font-size: var(--fs-md); }
+  .rel-sol ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+  .rel-sol a { display: inline-flex; align-items: center; gap: 4px; padding: 8px 14px; border-radius: var(--radius-sm); background: var(--c-sky); color: var(--c-navy); text-decoration: none; font-weight: 600; font-size: var(--fs-sm); }
+</style>

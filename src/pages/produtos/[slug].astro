@@ -1,0 +1,214 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import Gallery from '../../components/Gallery.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Icon from '../../components/Icon.astro';
+import { products, getCategory, getSubcategory, productImages, relatedProducts, productUrl, ambientesLabel, atas, type Product } from '../../lib/catalog';
+import { absoluteUrl, formatDate, marca } from '../../lib/site';
+import { breadcrumbLd, productLd, truncate } from '../../lib/seo';
+import { waLink, mensagens } from '../../lib/whatsapp';
+
+export function getStaticPaths() {
+  return products.map((p) => ({ params: { slug: p.slug }, props: { product: p } }));
+}
+interface Props { product: Product }
+const { product: p } = Astro.props;
+const cat = getCategory(p.categoria)!;
+const sub = getSubcategory(p.categoria, p.subcategoria);
+const url = absoluteUrl(productUrl(p));
+const images = productImages(p);
+const related = relatedProducts(p);
+const ata = p.ata_confirmada ? atas.find((a) => a.id === p.referencia_ata) : undefined;
+
+// Tabela técnica: somente campos preenchidos (dados confirmados). Nada é inventado.
+const rows: [string, string][] = ([
+  ['Código RENEM', p.renem],
+  ['Código CATMAT', p.catmat],
+  ['Categoria', cat.nome + (sub ? ` › ${sub.nome}` : '')],
+  ['Tipo de equipamento', p.tipo_equipamento],
+  ['Marca', p.marca],
+  ['Fabricante', p.fabricante],
+  ['Modelo', p.modelo],
+  ['Dimensões', p.dimensoes],
+  ['Peso', p.peso],
+  ['Capacidade de carga', p.capacidade_carga],
+  ['Material', p.material],
+  ['Alimentação elétrica', p.alimentacao_eletrica],
+  ...p.especificacoes.map((s) => [s.label, s.value]),
+  ['Funcionalidades', p.funcionalidades.join('; ')],
+  ['Acessórios', p.acessorios.join('; ')],
+  ['Garantia', p.garantia],
+  ['Prazo de entrega', p.prazo_entrega],
+  ['Regularização sanitária (Anvisa)', p.anvisa],
+  ['Certificações', p.certificacoes.join('; ')],
+  ['Ambientes de utilização', p.ambientes.map((a) => ambientesLabel[a]).join(', ')],
+  ['Aplicações', p.aplicacoes.join('; ')],
+] as [string, string][]).filter(([, v]) => v && String(v).trim());
+
+const docs = [
+  p.ficha_tecnica && { label: 'Ficha técnica', href: p.ficha_tecnica },
+  p.manual && { label: 'Manual do usuário', href: p.manual },
+].filter(Boolean) as { label: string; href: string }[];
+
+const title = p.titulo_seo || `${p.nome}${p.renem ? ` RENEM ${p.renem}` : ''} para órgãos públicos`;
+const description = p.meta_description || truncate(`${p.descricao_resumida} Solicite proposta e consulte fornecimento por Ata de Registro de Preços.`);
+const crumbs = [{ label: cat.nome, href: `/categorias/${cat.slug}/` }, { label: p.nome }];
+const waMsg = mensagens.produto(p.nome, url, p.renem);
+---
+<BaseLayout
+  title={title}
+  description={description}
+  image={images[0].src}
+  imageAlt={images[0].alt}
+  ogType="product"
+  waMessage={waMsg}
+  jsonLd={[breadcrumbLd(crumbs.map((c, i) => (i === crumbs.length - 1 ? { label: c.label, href: productUrl(p) } : c))), productLd(p)]}
+>
+  <div class="container product" data-product-page data-id={p.id} data-name={p.nome} data-category={cat.nome}>
+    <Breadcrumb items={[{ label: cat.nome, href: `/categorias/${cat.slug}/` }, { label: p.nome }]} />
+
+    {p.demonstrativo && (
+      <div class="notice notice--warn product__demo" role="note">
+        <Icon name="alert" />
+        <p><strong>Produto demonstrativo.</strong> Cadastro fictício usado para validar o catálogo na fase de homologação; não corresponde a um item comercializado.</p>
+      </div>
+    )}
+
+    <div class="product__top">
+      <Gallery images={images} />
+
+      <div class="product__info">
+        <p class="product__cat"><a href={`/categorias/${cat.slug}/`}>{cat.nome}</a>{sub && <> · {sub.nome}</>}</p>
+        <h1>{p.nome}</h1>
+        <dl class="product__codes">
+          {p.renem && <div><dt>RENEM</dt><dd>{p.renem}</dd></div>}
+          {p.catmat && <div><dt>CATMAT</dt><dd>{p.catmat}</dd></div>}
+          {p.marca && <div><dt>Marca</dt><dd>{p.marca}</dd></div>}
+          {p.modelo && <div><dt>Modelo</dt><dd>{p.modelo}</dd></div>}
+        </dl>
+        {p.descricao_resumida && <p class="product__summary">{p.descricao_resumida}</p>}
+
+        <div class="product__status">
+          {p.ata_confirmada && ata
+            ? <p><Icon name="check" size={18} /> <strong>Disponível para consulta em ata</strong> — Ata nº {ata.numero} ({ata.orgaoGerenciador}), vigente até {formatDate(ata.vigenciaFim)}. A adesão depende de saldo, compatibilidade e anuências.</p>
+            : <p><Icon name="info" size={18} /> <strong>Disponibilidade: {p.disponibilidade_comercial || 'sob consulta'}.</strong> Consulte especificações, configuração e condições de fornecimento.</p>}
+        </div>
+
+        <div class="product__cta">
+          <a href={waLink(waMsg)} class="btn btn--whatsapp btn--block" target="_blank" rel="noopener" data-track="whatsapp_click quote_request_click" data-track-item-id={p.id} data-track-item-name={p.nome} data-track-location="produto-principal">
+            <Icon name="whatsapp" /> Solicitar proposta pelo WhatsApp
+          </a>
+          <a href={waLink(mensagens.produtoAta(p.nome, url, p.renem))} class="btn btn--outline btn--block" target="_blank" rel="noopener" data-track="whatsapp_click ata_request_click" data-track-item-id={p.id} data-track-item-name={p.nome} data-track-location="produto-ata">
+            <Icon name="clipboard" /> Consultar disponibilidade em ata
+          </a>
+          <a href={waLink(mensagens.produtoDocumentacao(p.nome, url, p.renem))} class="btn btn--outline btn--block" target="_blank" rel="noopener" data-track="whatsapp_click technical_document_request" data-track-item-id={p.id} data-track-item-name={p.nome} data-track-location="produto-documentacao">
+            <Icon name="doc" /> Solicitar documentação técnica
+          </a>
+          <button type="button" class="share-btn" data-share data-url={url} data-title={p.nome}>
+            <Icon name="share" size={18} /> <span data-share-label>Compartilhar este produto</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product__details">
+      <section aria-labelledby="desc-title">
+        <h2 id="desc-title">Descrição</h2>
+        {p.descricao_completa.length ? p.descricao_completa.map((par) => <p>{par}</p>) : <p>{p.descricao_resumida}</p>}
+      </section>
+
+      <section aria-labelledby="spec-title">
+        <h2 id="spec-title">Especificações técnicas</h2>
+        <div class="spec-wrap">
+          <table class="spec">
+            <caption class="sr-only">Especificações de {p.nome}</caption>
+            <tbody>
+              {rows.map(([k, v]) => <tr><th scope="row">{k}</th><td>{v}</td></tr>)}
+              {!p.ficha_tecnica && <tr><th scope="row">Ficha técnica</th><td>Solicitar à equipe comercial</td></tr>}
+            </tbody>
+          </table>
+        </div>
+        <p class="small muted">Exibimos somente informações confirmadas. Demais especificações, configurações e acessórios podem ser solicitados à equipe comercial.{p.data_atualizacao && ` Atualizado em ${formatDate(p.data_atualizacao)}.`}</p>
+      </section>
+
+      <section aria-labelledby="doc-title">
+        <h2 id="doc-title">Documentação</h2>
+        {docs.length ? (
+          <ul class="docs">
+            {docs.map((d) => (
+              <li><a href={d.href} class="btn btn--outline btn--sm" target="_blank" rel="noopener" data-track="technical_document_download" data-track-item-id={p.id} data-track-document-type={d.label}><Icon name="doc" size={18} /> {d.label}</a></li>
+            ))}
+          </ul>
+        ) : (
+          <p>Ficha técnica, manual, certificados e documentação sanitária (quando aplicável) são enviados mediante solicitação, conforme disponibilizados e autorizados pelo fornecedor.</p>
+        )}
+      </section>
+    </div>
+
+    {related.length > 0 && (
+      <section class="related" aria-labelledby="rel-title">
+        <h2 id="rel-title">Produtos relacionados</h2>
+        <div class="grid grid--products">
+          {related.map((r) => <ProductCard product={r} listName="relacionados" />)}
+        </div>
+      </section>
+    )}
+  </div>
+
+  <CtaBand
+    title="Precisa consultar este equipamento para uma aquisição pública?"
+    text={`Fale com nossa equipe sobre ${p.nome}: especificações, documentação e possibilidades de fornecimento.`}
+    message={waMsg}
+    buttonLabel="Fale com nossa equipe"
+    location="produto-final"
+  />
+</BaseLayout>
+
+<script>
+  import { track } from '../../scripts/analytics';
+  const el = document.querySelector<HTMLElement>('[data-product-page]');
+  if (el) track('view_item', { item_id: el.dataset.id, item_name: el.dataset.name, item_category: el.dataset.category });
+  const share = document.querySelector<HTMLButtonElement>('[data-share]');
+  share?.addEventListener('click', async () => {
+    const url = share.dataset.url!; const title = share.dataset.title!;
+    const label = share.querySelector('[data-share-label]')!;
+    try {
+      if (navigator.share) await navigator.share({ title, url });
+      else { await navigator.clipboard.writeText(url); label.textContent = 'Link copiado'; setTimeout(() => (label.textContent = 'Compartilhar este produto'), 2500); }
+      track('share', { item_name: title, method: navigator.share ? 'web-share' : 'copiar-link' });
+    } catch { /* cancelado pelo usuário */ }
+  });
+</script>
+
+<style>
+  .product { padding-block: var(--sp-6) var(--sp-12); }
+  .product__demo { margin-bottom: var(--sp-5); }
+  .product__top { display: grid; gap: var(--sp-8); }
+  @media (min-width: 900px) { .product__top { grid-template-columns: 1.1fr 1fr; align-items: start; } }
+  .product__cat { margin: 0 0 var(--sp-2); font-size: var(--fs-sm); font-weight: 600; color: var(--c-gray-500); }
+  .product__cat a { color: var(--c-teal-dark); text-decoration: none; }
+  .product__info h1 { font-size: clamp(1.625rem, 1.3rem + 1.4vw, 2.375rem); margin-bottom: var(--sp-3); }
+  .product__codes { display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-5); margin: 0 0 var(--sp-4); }
+  .product__codes div { display: flex; gap: 6px; font-size: var(--fs-sm); }
+  .product__codes dt { color: var(--c-gray-500); font-weight: 600; }
+  .product__codes dd { margin: 0; font-weight: 700; color: var(--c-teal-dark); }
+  .product__summary { font-size: var(--fs-md); }
+  .product__status { background: var(--c-sky); border-radius: var(--radius); padding: var(--sp-3) var(--sp-4); margin-bottom: var(--sp-5); font-size: var(--fs-sm); color: var(--c-navy); }
+  .product__status p { margin: 0; }
+  .product__status :global(svg) { display: inline; vertical-align: -3px; color: var(--c-teal-dark); }
+  .product__cta { display: grid; gap: var(--sp-3); }
+  .share-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; background: none; border: 0; color: var(--c-teal-dark); font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+  .product__details { display: grid; gap: var(--sp-10); margin-top: var(--sp-12); max-width: 900px; }
+  .product__details h2 { font-size: var(--fs-lg); padding-bottom: var(--sp-2); border-bottom: 1px solid var(--c-gray-200); }
+  .spec-wrap { overflow-x: auto; }
+  .spec th, .spec td { text-align: left; padding: var(--sp-3) var(--sp-4); vertical-align: top; font-size: var(--fs-sm); }
+  .spec th { width: 38%; color: var(--c-gray-500); font-weight: 600; }
+  .spec td { color: var(--c-navy); font-weight: 600; }
+  .spec tr:nth-child(odd) { background: var(--c-gray-50); }
+  @media (max-width: 559px) { .spec th, .spec td { display: block; width: auto; } .spec th { padding-bottom: 0; } .spec td { padding-top: 2px; } }
+  .docs { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+  .related { margin-top: var(--sp-12); }
+  .related h2 { font-size: var(--fs-lg); }
+</style>

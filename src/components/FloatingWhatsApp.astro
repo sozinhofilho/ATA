@@ -1,0 +1,32 @@
+---
+import Icon from './Icon.astro';
+import { waLink } from '../lib/whatsapp';
+interface Props { message: string }
+const { message } = Astro.props;
+---
+<a
+  href={waLink(message)}
+  class="wa-float"
+  target="_blank"
+  rel="noopener"
+  data-track="whatsapp_click"
+  data-track-location="botao-flutuante"
+  aria-label="Falar com a equipe comercial pelo WhatsApp (abre em nova aba)"
+>
+  <Icon name="whatsapp" size={26} />
+  <span class="wa-float__label">WhatsApp</span>
+</a>
+
+<style>
+  /* Discreto, fora das áreas de conteúdo e sem cobrir os CTAs principais no celular */
+  .wa-float {
+    position: fixed; right: 16px; bottom: max(16px, env(safe-area-inset-bottom)); z-index: 40;
+    display: inline-flex; align-items: center; gap: 8px; min-height: 52px; min-width: 52px; justify-content: center;
+    padding: 0 14px; border-radius: 999px; background: var(--c-whatsapp); color: #fff; text-decoration: none; font-weight: 650;
+    box-shadow: 0 6px 20px rgba(16,46,67,.25);
+  }
+  .wa-float:hover { background: var(--c-whatsapp-dark); color: #fff; }
+  .wa-float__label { display: none; }
+  @media (min-width: 900px) { .wa-float { padding: 0 18px 0 14px; } .wa-float__label { display: inline; } }
+  @media print { .wa-float { display: none; } }
+</style>

@@ -1,0 +1,129 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import LeadForm from '../components/LeadForm.astro';
+import Icon from '../components/Icon.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { atas, getCategory } from '../lib/catalog';
+import { formatDate } from '../lib/site';
+import { breadcrumbLd } from '../lib/seo';
+import { waLink, mensagens } from '../lib/whatsapp';
+const msg = mensagens.atas();
+---
+<BaseLayout
+  title="Consultar Atas de Registro de Preços — equipamentos hospitalares"
+  description="Consulte o fornecimento de equipamentos hospitalares por Atas de Registro de Preços vigentes: verificamos vigência, objeto, saldo e condições de adesão."
+  waMessage={msg}
+  jsonLd={[breadcrumbLd([{ label: 'Atas disponíveis', href: '/atas/' }])]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumb items={[{ label: 'Atas disponíveis' }]} />
+      <h1>Consultar Atas de Registro de Preços</h1>
+      <p>Consulte possibilidades de fornecimento para o seu órgão. Informe quais produtos, quantidades e município: a equipe verifica vigência, objeto, saldo e condições de adesão junto às fontes oficiais e ao fornecedor.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container atas-layout">
+      <div>
+        {atas.length > 0 ? (
+          <section aria-labelledby="lista-atas">
+            <h2 id="lista-atas">Atas vigentes divulgadas</h2>
+            <p class="muted small">Atas conferidas em fonte oficial e autorizadas para divulgação. A data da última conferência é indicada em cada item.</p>
+            <ul class="ata-list">
+              {atas.map((a) => (
+                <li class="ata card">
+                  <div class="ata__head">
+                    <h3>Ata nº {a.numero}</h3>
+                    <span class="badge badge--ata"><Icon name="check" size={14} />Vigente até {formatDate(a.vigenciaFim)}</span>
+                  </div>
+                  <dl class="ata__data">
+                    <div><dt>Órgão gerenciador</dt><dd>{a.orgaoGerenciador}{a.uf && ` (${a.uf})`}</dd></div>
+                    <div><dt>Fornecedor beneficiário</dt><dd>{a.fornecedorBeneficiario}</dd></div>
+                    <div><dt>Objeto</dt><dd>{a.objeto}</dd></div>
+                    {a.categorias?.length > 0 && <div><dt>Categorias</dt><dd>{a.categorias.map((c) => getCategory(c)?.nome || c).join(', ')}</dd></div>}
+                    <div><dt>Vigência</dt><dd>{formatDate(a.vigenciaInicio)} a {formatDate(a.vigenciaFim)}</dd></div>
+                    <div><dt>Situação de adesão</dt><dd>{a.situacaoAdesao || 'A confirmar na consulta'}</dd></div>
+                    <div><dt>Última conferência</dt><dd>{formatDate(a.dataConferencia)}</dd></div>
+                  </dl>
+                  {a.observacoes && <p class="small">{a.observacoes}</p>}
+                  <div class="btn-row">
+                    <a href={waLink(mensagens.ataEspecifica(a.numero, a.orgaoGerenciador))} class="btn btn--whatsapp btn--sm" target="_blank" rel="noopener" data-track="whatsapp_click ata_request_click" data-track-ata-id={a.id} data-track-location="lista-atas"><Icon name="whatsapp" size={18} /> Consultar condições</a>
+                    {a.linkOficial && <a href={a.linkOficial} class="btn btn--outline btn--sm" target="_blank" rel="noopener external">Fonte oficial <Icon name="external" size={16} /><span class="sr-only"> (abre em nova aba)</span></a>}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : (
+          <section aria-labelledby="consulta-title" class="consulta card">
+            <h2 id="consulta-title">Consulta de ata</h2>
+            <p>No momento, as atas são consultadas sob demanda: a disponibilidade muda conforme vigência e saldo, por isso confirmamos cada caso diretamente nas fontes oficiais antes de informar o órgão. Nenhuma ata, saldo, prazo ou preço é presumido.</p>
+            <a href={waLink(msg)} class="btn btn--whatsapp" target="_blank" rel="noopener" data-track="whatsapp_click ata_request_click" data-track-location="atas-consulta"><Icon name="whatsapp" /> Solicitar consulta de ata pelo WhatsApp</a>
+          </section>
+        )}
+
+        <div class="notice ata-notice" role="note">
+          <Icon name="info" />
+          <p>A disponibilidade e a possibilidade de adesão dependem da vigência da ata, dos quantitativos disponíveis, da compatibilidade do objeto e dos requisitos legais aplicáveis.</p>
+        </div>
+
+        <section aria-labelledby="form-ata" class="form-block">
+          <h2 id="form-ata">Monte sua consulta</h2>
+          <p class="muted">Preencha os dados abaixo para gerar a mensagem de consulta. Você revisa o texto antes de enviar.</p>
+          <LeadForm id="form-consulta-ata" variant="ata" />
+        </section>
+      </div>
+
+      <aside class="atas-aside">
+        <div class="card aside-card">
+          <h2>O que verificamos</h2>
+          <ul class="checks">
+            <li><Icon name="check" size={18} /> Número da ata e órgão gerenciador</li>
+            <li><Icon name="check" size={18} /> Fornecedor beneficiário e objeto</li>
+            <li><Icon name="check" size={18} /> Vigência e situação de adesão</li>
+            <li><Icon name="check" size={18} /> Quantitativos disponíveis para adesão</li>
+            <li><Icon name="check" size={18} /> Link oficial (PNCP ou fonte equivalente) e data da conferência</li>
+          </ul>
+        </div>
+        <div class="card aside-card">
+          <h2>Regra de publicação</h2>
+          <p class="small">Só divulgamos atas conferidas em fonte oficial e autorizadas pelo fornecedor. Não simulamos saldo, prazo, preço ou elegibilidade, e não afirmamos que um órgão pode aderir automaticamente.</p>
+          <a href="/como-comprar/" class="btn btn--outline btn--sm btn--block">Como funciona a adesão</a>
+        </div>
+        <div class="card aside-card">
+          <h2>Fontes oficiais</h2>
+          <ul class="links">
+            <li><a href="https://www.gov.br/pncp/pt-br" target="_blank" rel="noopener external">Portal Nacional de Contratações Públicas (PNCP) <Icon name="external" size={14} /></a></li>
+            <li><a href="https://www.gov.br/compras/pt-br" target="_blank" rel="noopener external">Compras.gov.br <Icon name="external" size={14} /></a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <CtaBand title="Tem uma lista de equipamentos para adquirir?" text="Envie itens, quantidades e município. Retornamos com as possibilidades identificadas e o que depende de confirmação." message={mensagens.lista()} buttonLabel="Enviar lista pelo WhatsApp" location="atas-final" />
+</BaseLayout>
+
+<style>
+  .atas-layout { display: grid; gap: var(--sp-8); }
+  @media (min-width: 1000px) { .atas-layout { grid-template-columns: 1fr 340px; align-items: start; } }
+  .consulta { padding: var(--sp-6); background: var(--c-sky); border-color: transparent; }
+  .ata-notice { margin-block: var(--sp-6); }
+  .ata-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-4); }
+  .ata { padding: var(--sp-5); }
+  .ata__head { display: flex; flex-wrap: wrap; gap: var(--sp-2); justify-content: space-between; align-items: center; }
+  .ata__data { display: grid; gap: var(--sp-2); margin: var(--sp-3) 0; font-size: var(--fs-sm); }
+  .ata__data div { display: grid; grid-template-columns: minmax(130px, 34%) 1fr; gap: var(--sp-3); }
+  .ata__data dt { color: var(--c-gray-500); font-weight: 600; }
+  .ata__data dd { margin: 0; color: var(--c-navy); }
+  .form-block { margin-top: var(--sp-10); }
+  .atas-aside { display: grid; gap: var(--sp-4); }
+  .aside-card { padding: var(--sp-5); }
+  .aside-card h2 { font-size: var(--fs-md); }
+  .checks, .links { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); font-size: var(--fs-sm); }
+  .checks li { display: flex; gap: var(--sp-2); }
+  .checks :global(svg) { color: var(--c-teal-dark); flex: none; margin-top: 2px; }
+  .links :global(svg) { display: inline; vertical-align: -2px; }
+</style>

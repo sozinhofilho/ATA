@@ -1,0 +1,62 @@
+---
+import Icon from './Icon.astro';
+interface Img { src: string; alt: string; ilustracao: boolean }
+interface Props { images: Img[] }
+const { images } = Astro.props;
+const anyIlustr = images.some((i) => i.ilustracao);
+---
+<div class="gallery" data-gallery>
+  <button type="button" class="gallery__main" data-gallery-open aria-label="Ampliar imagem">
+    <img src={images[0].src} alt={images[0].alt} width="720" height="480" fetchpriority="high" data-gallery-main />
+    <span class="gallery__zoom" aria-hidden="true"><Icon name="zoom" size={20} /></span>
+  </button>
+  {images.length > 1 && (
+    <ul class="gallery__thumbs" aria-label="Miniaturas">
+      {images.map((img, i) => (
+        <li>
+          <button type="button" class="gallery__thumb" aria-pressed={i === 0 ? 'true' : 'false'} data-index={i} data-src={img.src} data-alt={img.alt} aria-label={`Exibir imagem ${i + 1} de ${images.length}`}>
+            <img src={img.src} alt="" width="120" height="80" loading="lazy" />
+          </button>
+        </li>
+      ))}
+    </ul>
+  )}
+  {anyIlustr && <p class="gallery__note">Imagens ilustrativas/esquemáticas. Modelo, acabamento e documentação sujeitos a confirmação.</p>}
+
+  <dialog class="lightbox" data-lightbox aria-label="Imagem ampliada">
+    <form method="dialog"><button class="icon-btn lightbox__close" aria-label="Fechar imagem ampliada"><Icon name="close" /></button></form>
+    <img src={images[0].src} alt={images[0].alt} data-lightbox-img />
+  </dialog>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((g) => {
+    const main = g.querySelector<HTMLImageElement>('[data-gallery-main]')!;
+    const dlg = g.querySelector<HTMLDialogElement>('[data-lightbox]')!;
+    const big = g.querySelector<HTMLImageElement>('[data-lightbox-img]')!;
+    g.querySelectorAll<HTMLButtonElement>('.gallery__thumb').forEach((t) => t.addEventListener('click', () => {
+      main.src = t.dataset.src!; main.alt = t.dataset.alt!;
+      g.querySelectorAll('.gallery__thumb').forEach((x) => x.setAttribute('aria-pressed', String(x === t)));
+    }));
+    g.querySelector('[data-gallery-open]')!.addEventListener('click', () => {
+      big.src = main.src; big.alt = main.alt;
+      if (typeof dlg.showModal === 'function') dlg.showModal(); else window.open(main.src, '_blank');
+    });
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  });
+</script>
+
+<style>
+  .gallery__main { position: relative; display: block; width: 100%; padding: 0; border: 1px solid var(--c-gray-200); border-radius: var(--radius); background: var(--c-sky); cursor: zoom-in; aspect-ratio: 3 / 2; overflow: hidden; }
+  .gallery__main img { width: 100%; height: 100%; object-fit: contain; padding: var(--sp-4); }
+  .gallery__zoom { position: absolute; right: 10px; top: 10px; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: #fff; color: var(--c-navy); box-shadow: var(--shadow-sm); }
+  .gallery__thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: var(--sp-2); list-style: none; margin: var(--sp-3) 0 0; padding: 0; }
+  .gallery__thumb { display: block; width: 100%; padding: 0; border: 2px solid transparent; border-radius: var(--radius-sm); background: var(--c-sky); cursor: pointer; aspect-ratio: 3 / 2; }
+  .gallery__thumb img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
+  .gallery__thumb[aria-pressed="true"] { border-color: var(--c-teal); }
+  .gallery__note { font-size: var(--fs-xs); color: var(--c-gray-500); margin: var(--sp-2) 0 0; }
+  .lightbox { border: 0; border-radius: var(--radius); padding: var(--sp-4); width: min(960px, 94vw); max-height: 92vh; background: #fff; }
+  .lightbox::backdrop { background: rgba(16,46,67,.75); }
+  .lightbox img { width: 100%; max-height: 80vh; object-fit: contain; background: var(--c-sky); border-radius: var(--radius-sm); }
+  .lightbox form { display: flex; justify-content: flex-end; margin-bottom: var(--sp-2); }
+</style>

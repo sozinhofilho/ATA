@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Icon from '../../components/Icon.astro';
+import { solutions, productsForSolution } from '../../lib/catalog';
+import { breadcrumbLd } from '../../lib/seo';
+import { mensagens } from '../../lib/whatsapp';
+---
+<BaseLayout
+  title="Soluções para UBS, UPA, hospitais e maternidades"
+  description="Mobiliário e equipamentos por tipo de unidade: UBS, UPA, hospitais, consultórios, maternidades, especialidades, emergência, enfermarias e lavanderias."
+  jsonLd={[breadcrumbLd([{ label: 'Soluções', href: '/solucoes/' }])]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumb items={[{ label: 'Soluções' }]} />
+      <h1>Soluções por unidade de saúde</h1>
+      <p>Categorias e produtos do catálogo agrupados pelos ambientes em que costumam ser utilizados. As listas são referências para a consulta comercial: não representam exigências sanitárias nem projetos completos de engenharia clínica, e o dimensionamento final deve ser feito pelos profissionais responsáveis.</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <ul class="sol-list">
+        {solutions.map((s) => (
+          <li class="card">
+            <img src={`/images/ilustracoes/${s.ilustracao}.svg`} alt="" width="240" height="160" loading="lazy" />
+            <div>
+              <h2><a href={`/solucoes/${s.slug}/`}>{s.nome}</a></h2>
+              <p>{s.resumo}</p>
+              <p class="small muted">{productsForSolution(s).length} produtos relacionados no catálogo</p>
+              <a href={`/solucoes/${s.slug}/`} class="btn btn--outline btn--sm">Ver solução<span class="sr-only"> {s.nome}</span> <Icon name="arrow" size={18} /></a>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+  <CtaBand title="Está estruturando uma nova unidade?" text="Envie a lista de ambientes e equipamentos previstos. Nossa equipe organiza o retorno por item." message={mensagens.lista()} buttonLabel="Enviar lista pelo WhatsApp" location="solucoes-final" />
+</BaseLayout>
+
+<style>
+  .sol-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-5); grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+  .sol-list li { display: grid; grid-template-columns: 110px 1fr; gap: var(--sp-4); padding: var(--sp-5); }
+  .sol-list img { background: var(--c-sky); border-radius: var(--radius-sm); }
+  .sol-list h2 { font-size: var(--fs-md); }
+  .sol-list h2 a { color: var(--c-navy); text-decoration: none; }
+  .sol-list p { font-size: var(--fs-sm); margin-bottom: var(--sp-2); }
+  .sol-list .btn { margin-top: var(--sp-2); }
+</style>

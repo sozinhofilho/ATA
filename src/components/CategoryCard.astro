@@ -1,0 +1,26 @@
+---
+interface Props { href: string; nome: string; ilustracao: string; count?: number; descricao?: string; compact?: boolean }
+const { href, nome, ilustracao, count, descricao, compact = false } = Astro.props;
+---
+<a href={href} class:list={['ccard', { 'ccard--compact': compact }]}>
+  <span class="ccard__media"><img src={`/images/ilustracoes/${ilustracao}.svg`} alt="" width="240" height="160" loading="lazy" decoding="async" /></span>
+  <span class="ccard__body">
+    <span class="ccard__title">{nome}</span>
+    {typeof count === 'number' && <span class="ccard__count">{count} {count === 1 ? 'produto publicado' : 'produtos publicados'}</span>}
+    {descricao && !compact && <span class="ccard__desc">{descricao}</span>}
+  </span>
+</a>
+
+<style>
+  .ccard { display: flex; flex-direction: column; height: 100%; text-decoration: none; color: inherit; background: #fff; border: 1px solid var(--c-gray-200); border-radius: var(--radius); overflow: hidden; transition: border-color .15s, box-shadow .15s, transform .15s; }
+  .ccard:hover { border-color: var(--c-teal); box-shadow: var(--shadow); color: inherit; }
+  .ccard__media { background: var(--c-sky); aspect-ratio: 16 / 9; display: grid; place-items: center; }
+  .ccard__media img { height: 100%; width: auto; padding: 6px; }
+  .ccard__body { display: grid; gap: 4px; padding: var(--sp-4); }
+  .ccard__title { font-weight: 700; color: var(--c-navy); font-size: var(--fs-base); }
+  .ccard__count { font-size: var(--fs-xs); color: var(--c-teal-dark); font-weight: 650; }
+  .ccard__desc { font-size: var(--fs-sm); color: var(--c-gray-500); }
+  .ccard--compact .ccard__body { padding: var(--sp-3); text-align: center; }
+  .ccard--compact .ccard__title { font-size: var(--fs-sm); }
+  @media (max-width: 559px) { .ccard__body { padding: var(--sp-3); } .ccard__title { font-size: var(--fs-sm); } .ccard__desc { display: none; } }
+</style>

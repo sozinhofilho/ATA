@@ -1,0 +1,72 @@
+---
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+import { NAV, marca, contato, empresa, config } from '../lib/site';
+import { categories } from '../lib/catalog';
+import { waLink, mensagens } from '../lib/whatsapp';
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="container site-footer__grid">
+    <div class="site-footer__brand">
+      <p class="site-footer__logo"><Logo negative /></p>
+      <p>{marca.descricaoCurta}</p>
+      <div class="btn-row">
+        <a href={waLink(mensagens.geral())} class="btn btn--whatsapp btn--sm" target="_blank" rel="noopener" data-track="whatsapp_click" data-track-location="rodape"><Icon name="whatsapp" /> WhatsApp</a>
+        <a href="/atas/" class="btn btn--ghost-light btn--sm" data-track="ata_request_click" data-track-location="rodape">Consultar atas</a>
+      </div>
+    </div>
+
+    <nav aria-label="Navegação do rodapé">
+      <h2>Navegação</h2>
+      <ul>{NAV.map((n) => <li><a href={n.href}>{n.label}</a></li>)}</ul>
+    </nav>
+
+    <nav aria-label="Categorias de produtos">
+      <h2>Categorias</h2>
+      <ul>{categories.map((c) => <li><a href={`/categorias/${c.slug}/`}>{c.nome}</a></li>)}</ul>
+    </nav>
+
+    <div>
+      <h2>Contato</h2>
+      <ul class="site-footer__contact">
+        <li><Icon name="whatsapp" size={18} /><a href={waLink(mensagens.geral())} target="_blank" rel="noopener" data-track="whatsapp_click" data-track-location="rodape-contato">{contato.whatsappExibicao}</a></li>
+        <li><Icon name="mail" size={18} /><a href={`mailto:${contato.email}`}>{contato.email}</a></li>
+        {contato.telefone && <li><Icon name="phone" size={18} /><a href={`tel:+${contato.telefone}`}>{contato.telefoneExibicao}</a></li>}
+        <li><Icon name="clock" size={18} /><span>{contato.horarioAtendimento}</span></li>
+        {empresa.endereco && <li><Icon name="map" size={18} /><span>{empresa.endereco}{empresa.cidadeUf && ` — ${empresa.cidadeUf}`}</span></li>}
+      </ul>
+    </div>
+  </div>
+
+  <div class="container site-footer__legal">
+    <p class="site-footer__aviso"><Icon name="info" size={18} /> {config.aviso}</p>
+    <p>
+      {empresa.razaoSocial ? empresa.razaoSocial : marca.nome}{empresa.cnpj && ` · CNPJ ${empresa.cnpj}`} · © {year}
+      · <a href="/politica-de-privacidade/">Política de privacidade</a>
+      · <a href="/termos-de-uso/">Termos de uso</a>
+    </p>
+    <p class="site-footer__small">As imagens exibidas podem ser ilustrativas. Especificações, disponibilidade e condições de fornecimento estão sujeitas a confirmação pela equipe comercial e pelo fornecedor.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer { background: var(--c-navy); color: #c9d8e3; padding-top: var(--sp-12); margin-top: 0; font-size: var(--fs-sm); }
+  .site-footer__grid { display: grid; gap: var(--sp-8); grid-template-columns: 1fr; }
+  @media (min-width: 700px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1024px) { .site-footer__grid { grid-template-columns: 1.4fr 1fr 1.2fr 1.3fr; } }
+  .site-footer h2 { color: #fff; font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: .08em; margin-bottom: var(--sp-4); }
+  .site-footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); }
+  .site-footer a { color: #e6eef4; text-decoration: none; }
+  .site-footer a:hover { color: #fff; text-decoration: underline; }
+  .site-footer__logo { margin-bottom: var(--sp-4); }
+  .site-footer__brand p { max-width: 38ch; }
+  .site-footer__contact li { display: flex; gap: var(--sp-2); align-items: flex-start; }
+  .site-footer__contact :global(svg) { margin-top: 2px; flex: none; color: #8fc9d0; }
+  .site-footer__contact a { word-break: break-word; }
+  .site-footer__legal { border-top: 1px solid rgba(255,255,255,.14); margin-top: var(--sp-10); padding-block: var(--sp-6) var(--sp-8); }
+  .site-footer__legal p { margin-bottom: var(--sp-2); }
+  .site-footer__aviso { display: flex; gap: var(--sp-2); align-items: flex-start; color: #fff; font-weight: 600; }
+  .site-footer__aviso :global(svg) { flex: none; margin-top: 2px; }
+  .site-footer__small { font-size: var(--fs-xs); color: #a9bccb; }
+</style>

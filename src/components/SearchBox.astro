@@ -1,0 +1,64 @@
+---
+import Icon from './Icon.astro';
+interface Props {
+  id: string;
+  placeholder?: string;
+  label?: string;
+  size?: 'lg' | 'md' | 'sm';
+  value?: string;
+  inline?: boolean;
+  location?: string;
+  buttonLabel?: string;
+}
+const {
+  id, placeholder = 'Pesquisar equipamento, categoria ou código RENEM', label = 'Pesquisar no catálogo de produtos',
+  size = 'md', value = '', inline = false, location = 'busca', buttonLabel = 'Pesquisar',
+} = Astro.props;
+---
+<form class={`searchbox searchbox--${size}`} action="/produtos/" method="get" role="search" data-search data-inline={inline ? 'true' : 'false'} data-location={location}>
+  <label for={id} class="sr-only">{label}</label>
+  <div class="searchbox__field">
+    <Icon name="search" size={20} class="searchbox__icon" />
+    <input
+      id={id} name="q" type="search" value={value} placeholder={placeholder} autocomplete="off" spellcheck="false"
+      role="combobox" aria-expanded="false" aria-controls={`${id}-lista`} aria-autocomplete="list" enterkeyhint="search"
+    />
+    <button type="submit" class="btn searchbox__btn">
+      <span class={size === 'sm' ? 'sr-only' : 'searchbox__btn-label'}>{buttonLabel}</span>
+      <Icon name="search" size={20} class={size === 'sm' ? '' : 'searchbox__btn-icon'} />
+    </button>
+  </div>
+  <ul id={`${id}-lista`} role="listbox" class="searchbox__list" aria-label="Sugestões de produtos" hidden></ul>
+  <p class="sr-only" aria-live="polite" data-search-status></p>
+</form>
+
+<style is:global>
+  .searchbox { position: relative; width: 100%; }
+  .searchbox__field { display: flex; align-items: center; gap: var(--sp-2); background: #fff; border: 1px solid var(--c-gray-300); border-radius: var(--radius); padding: 4px 4px 4px var(--sp-3); box-shadow: var(--shadow-sm); }
+  .searchbox__field:focus-within { border-color: var(--c-teal); box-shadow: 0 0 0 3px rgba(8,126,139,.22); }
+  .searchbox__icon { color: var(--c-gray-500); flex: none; }
+  .searchbox input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 0.55rem 0.25rem; outline: none; font-size: var(--fs-base); }
+  .searchbox input::placeholder { color: #6b7a8b; }
+  .searchbox input::-webkit-search-cancel-button { cursor: pointer; }
+  .searchbox__btn { min-height: 44px; padding-inline: 1.1rem; flex: none; }
+  .searchbox--lg .searchbox__field { padding: 6px 6px 6px var(--sp-4); }
+  .searchbox--lg input { font-size: var(--fs-md); padding-block: 0.7rem; }
+  .searchbox--lg .searchbox__btn { min-height: 52px; padding-inline: 1.6rem; }
+  .searchbox--sm .searchbox__field { padding: 2px 2px 2px var(--sp-3); }
+  .searchbox--sm input { padding-block: 0.4rem; font-size: var(--fs-sm); }
+  .searchbox--sm .searchbox__btn { min-height: 38px; padding-inline: 0.7rem; }
+  .searchbox__btn-icon { display: none !important; }
+  @media (max-width: 479px) {
+    .searchbox__btn-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .searchbox__btn-icon { display: block !important; }
+    .searchbox__btn, .searchbox--lg .searchbox__btn { padding-inline: 0.9rem; }
+  }
+  .searchbox__list { position: absolute; z-index: 60; left: 0; right: 0; top: calc(100% + 6px); margin: 0; padding: 6px; list-style: none; background: #fff; border: 1px solid var(--c-gray-200); border-radius: var(--radius); box-shadow: 0 12px 32px rgba(16,46,67,.16); max-height: min(70vh, 440px); overflow: auto; text-align: left; }
+  .sug { display: flex; align-items: center; gap: var(--sp-3); padding: 8px 10px; border-radius: var(--radius-sm); cursor: pointer; color: var(--c-text); }
+  .sug img { width: 48px; height: 32px; object-fit: contain; background: var(--c-sky); border-radius: 4px; flex: none; }
+  .sug strong { display: block; font-size: var(--fs-sm); color: var(--c-navy); font-weight: 650; }
+  .sug small { display: block; font-size: var(--fs-xs); color: var(--c-gray-500); }
+  .sug[aria-selected="true"], .sug:hover { background: var(--c-sky); }
+  .sug__icon { width: 48px; text-align: center; color: var(--c-teal-dark); font-size: 18px; flex: none; }
+  .sug--all { border-top: 1px solid var(--c-gray-200); margin-top: 4px; }
+</style>

@@ -1,0 +1,9 @@
+# Configuração para Netlify (alternativa de hospedagem). Cabeçalhos de segurança ficam em public/_headers.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # SITE_MODE = "production"   # ative somente após resolver as pendências (docs/pendencias-lancamento.md)
+  # SITE_URL = "https://www.seudominio.com.br"

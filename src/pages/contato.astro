@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import LeadForm from '../components/LeadForm.astro';
+import Icon from '../components/Icon.astro';
+import { contato, empresa } from '../lib/site';
+import { breadcrumbLd } from '../lib/seo';
+import { waLink, mensagens } from '../lib/whatsapp';
+---
+<BaseLayout
+  title="Contato"
+  description="Fale com a equipe comercial pelo WhatsApp ou e-mail: produtos, documentação técnica e fornecimento por Ata de Registro de Preços."
+  jsonLd={[breadcrumbLd([{ label: 'Contato', href: '/contato/' }])]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumb items={[{ label: 'Contato' }]} />
+      <h1>Fale com nossa equipe</h1>
+      <p>Atendimento comercial para órgãos públicos, hospitais e unidades de saúde. O canal mais rápido é o WhatsApp.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container contact">
+      <aside class="contact__channels">
+        <a href={waLink(mensagens.geral())} class="channel card" target="_blank" rel="noopener" data-track="whatsapp_click" data-track-location="contato-canal">
+          <span class="channel__icon channel__icon--wa"><Icon name="whatsapp" size={26} /></span>
+          <span><strong>WhatsApp</strong><small>{contato.whatsappExibicao}</small></span>
+        </a>
+        <a href={`mailto:${contato.email}`} class="channel card" data-track="generate_lead" data-track-method="email" data-track-location="contato-canal">
+          <span class="channel__icon"><Icon name="mail" size={24} /></span>
+          <span><strong>E-mail</strong><small>{contato.email}</small></span>
+        </a>
+        {contato.telefone && (
+          <a href={`tel:+${contato.telefone}`} class="channel card">
+            <span class="channel__icon"><Icon name="phone" size={24} /></span>
+            <span><strong>Telefone</strong><small>{contato.telefoneExibicao}</small></span>
+          </a>
+        )}
+        <div class="card hours">
+          <p><Icon name="clock" size={18} /> {contato.horarioAtendimento}</p>
+          {empresa.endereco && <p><Icon name="map" size={18} /> {empresa.endereco}{empresa.cidadeUf && ` — ${empresa.cidadeUf}`}</p>}
+          {empresa.razaoSocial && <p class="small">{empresa.razaoSocial}{empresa.cnpj && ` · CNPJ ${empresa.cnpj}`}</p>}
+        </div>
+      </aside>
+
+      <div class="card contact__form">
+        <h2>Enviar mensagem</h2>
+        <p class="muted small">Preencha os campos e escolha o canal. A mensagem é aberta no seu WhatsApp ou e-mail para revisão antes do envio.</p>
+        <LeadForm id="form-contato" />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact { display: grid; gap: var(--sp-8); }
+  @media (min-width: 960px) { .contact { grid-template-columns: 340px 1fr; align-items: start; } }
+  .contact__channels { display: grid; gap: var(--sp-3); }
+  .channel { display: flex; gap: var(--sp-4); align-items: center; padding: var(--sp-4); text-decoration: none; color: var(--c-text); }
+  .channel:hover { border-color: var(--c-teal); color: var(--c-text); }
+  .channel strong { display: block; color: var(--c-navy); }
+  .channel small { display: block; font-size: var(--fs-sm); color: var(--c-gray-500); word-break: break-all; }
+  .channel__icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 12px; background: var(--c-sky); color: var(--c-teal-dark); flex: none; }
+  .channel__icon--wa { background: #dff3e8; color: var(--c-whatsapp); }
+  .hours { padding: var(--sp-4); font-size: var(--fs-sm); }
+  .hours p { display: flex; gap: var(--sp-2); align-items: flex-start; margin-bottom: var(--sp-2); }
+  .hours :global(svg) { flex: none; margin-top: 3px; color: var(--c-teal-dark); }
+  .contact__form { padding: var(--sp-6); }
+</style>

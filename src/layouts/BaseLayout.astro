@@ -1,0 +1,120 @@
+---
+import '@fontsource-variable/inter/wght.css';
+import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import FloatingWhatsApp from '../components/FloatingWhatsApp.astro';
+import ConsentBanner from '../components/ConsentBanner.astro';
+import { marca, config, absoluteUrl, IS_PRODUCTION, analytics, ANALYTICS_ENABLED, contato, empresa } from '../lib/site';
+import { mensagens } from '../lib/whatsapp';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  imageAlt?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>[];
+  waMessage?: string;
+  ogType?: 'website' | 'article' | 'product';
+  showHeaderSearch?: boolean;
+}
+const {
+  title, description, image = marca.imagemCompartilhamento, imageAlt = `${marca.nome} — ${marca.slogan}`,
+  noindex = false, jsonLd = [], waMessage = mensagens.geral(), ogType = 'website', showHeaderSearch = true,
+} = Astro.props;
+
+const path = Astro.url.pathname;
+const canonical = absoluteUrl(path);
+const fullTitle = path === '/' ? `${marca.nome} | ${marca.complemento}` : `${title} | ${marca.nome}`;
+// Homologação nunca é indexada, para não publicar dados demonstrativos nos buscadores.
+const robots = !IS_PRODUCTION || noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large';
+const ogImage = absoluteUrl(image.endsWith('.svg') ? marca.imagemCompartilhamento : image);
+
+const orgLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': absoluteUrl('/#organizacao'),
+  name: empresa.razaoSocial || marca.nome,
+  alternateName: marca.nome,
+  url: absoluteUrl('/'),
+  logo: absoluteUrl('/images/marca/logo-512.png'),
+  description: marca.descricaoCurta,
+  ...(empresa.cnpj ? { taxID: empresa.cnpj } : {}),
+  contactPoint: [{ '@type': 'ContactPoint', contactType: 'sales', email: contato.email, availableLanguage: 'Portuguese', areaServed: 'BR' }],
+};
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="robots" content={robots} />
+    <meta name="theme-color" content="#102E43" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" href="/sitemap.xml" />
+
+    <meta property="og:type" content={ogType === 'product' ? 'product' : ogType} />
+    <meta property="og:site_name" content={marca.nome} />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    {analytics.gscVerification && <meta name="google-site-verification" content={analytics.gscVerification} />}
+
+    {path === '/' && <script type="application/ld+json" set:html={JSON.stringify(orgLd)} />}
+    {jsonLd.map((ld) => <script type="application/ld+json" set:html={JSON.stringify(ld)} />)}
+
+    {ANALYTICS_ENABLED && (
+      <script is:inline define:vars={{ ga4: analytics.ga4Id, gtm: analytics.gtmId }}>
+        window.__NEXUS_ANALYTICS__ = { ga4: ga4, gtm: gtm };
+      </script>
+    )}
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    {!IS_PRODUCTION && (
+      <div class="homolog-bar" role="note">
+        <div class="container">
+          <strong>Versão de homologação.</strong> <span class="homolog-long">Produtos, marcas, contatos e dados empresariais exibidos são demonstrativos ou provisórios e serão substituídos antes da publicação.</span><span class="homolog-short">Dados demonstrativos e provisórios.</span>
+        </div>
+      </div>
+    )}
+    <SiteHeader current={path} waMessage={waMessage} showSearch={showHeaderSearch} />
+    <main id="conteudo" tabindex="-1">
+      <slot />
+    </main>
+    <SiteFooter />
+    <FloatingWhatsApp message={waMessage} />
+    {ANALYTICS_ENABLED && <ConsentBanner />}
+
+    <script>
+      import { bindClickTracking } from '../scripts/analytics';
+      import { initSearchBoxes } from '../scripts/search-ui';
+      bindClickTracking();
+      initSearchBoxes();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  .homolog-bar { background: var(--c-warn-bg); color: var(--c-warn-text); font-size: var(--fs-xs); padding-block: 6px; border-bottom: 1px solid #f0dca8; }
+  main:focus { outline: none; }
+  .homolog-short { display: none; }
+  @media (max-width: 767px) { .homolog-long { display: none; } .homolog-short { display: inline; } .site-footer { padding-bottom: 72px; } }
+</style>

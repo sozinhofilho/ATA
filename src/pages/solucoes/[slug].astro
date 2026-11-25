@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import CategoryCard from '../../components/CategoryCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Icon from '../../components/Icon.astro';
+import { solutions, productsForSolution, categories } from '../../lib/catalog';
+import { breadcrumbLd, itemListLd, truncate } from '../../lib/seo';
+import { waLink, mensagens } from '../../lib/whatsapp';
+
+export function getStaticPaths() {
+  return solutions.map((s) => ({ params: { slug: s.slug }, props: { solution: s } }));
+}
+const { solution: s } = Astro.props;
+const list = productsForSolution(s);
+const cats = s.categorias.map((slug) => categories.find((c) => c.slug === slug)).filter((c): c is NonNullable<typeof c> => Boolean(c));
+const msg = mensagens.solucao(s.tipoUnidadeMensagem);
+---
+<BaseLayout
+  title={s.titulo}
+  description={truncate(`${s.introducao}`)}
+  waMessage={msg}
+  jsonLd={[breadcrumbLd([{ label: 'Soluções', href: '/solucoes/' }, { label: s.nome, href: `/solucoes/${s.slug}/` }]), itemListLd(s.titulo, list)]}
+>
+  <section class="page-hero">
+    <div class="container sol-hero">
+      <div>
+        <Breadcrumb items={[{ label: 'Soluções', href: '/solucoes/' }, { label: s.nome }]} />
+        <span class="eyebrow">Soluções · {s.nomeCurto}</span>
+        <h1>{s.titulo}</h1>
+        <p>{s.introducao}</p>
+        <div class="btn-row sol-hero__cta">
+          <a href={waLink(msg)} class="btn btn--whatsapp" target="_blank" rel="noopener" data-track="whatsapp_click generate_lead" data-track-location={`solucao-${s.slug}`} data-track-method="whatsapp"><Icon name="whatsapp" /> Solicitar atendimento</a>
+          <a href="/atas/" class="btn btn--outline" data-track="ata_request_click" data-track-location={`solucao-${s.slug}`}>Consultar atas</a>
+        </div>
+      </div>
+      <img src={`/images/ilustracoes/${s.ilustracao}.svg`} alt="" width="240" height="160" class="sol-hero__img" />
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="ctx-title">
+    <div class="container">
+      <h2 id="ctx-title">Contexto de utilização</h2>
+      <ul class="grid grid--4 ctx">
+        {s.contexto.map((c) => <li class="card"><h3>{c.titulo}</h3><p>{c.texto}</p></li>)}
+      </ul>
+      <div class="notice" role="note">
+        <Icon name="info" />
+        <p>Lista de referência para apoio à consulta comercial. Não constitui exigência sanitária, programa arquitetônico ou projeto de engenharia clínica. O dimensionamento final deve ser realizado pelos profissionais responsáveis.</p>
+      </div>
+    </div>
+  </section>
+
+  {cats.length > 0 && (
+    <section class="section section--sky" aria-labelledby="cats-title">
+      <div class="container">
+        <h2 id="cats-title">Categorias relacionadas</h2>
+        <div class="grid grid--4">
+          {cats.map((c) => <CategoryCard href={`/categorias/${c.slug}/`} nome={c.nome} ilustracao={c.ilustracao} count={c.count} compact />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section" aria-labelledby="prod-title">
+    <div class="container">
+      <h2 id="prod-title">Produtos compatíveis com {s.nome.toLowerCase()}</h2>
+      {list.length ? (
+        <div class="grid grid--products">{list.map((p) => <ProductCard product={p} listName={`solucao-${s.slug}`} />)}</div>
+      ) : (
+        <p>Os produtos desta solução estão em validação. Consulte nossa equipe pelo WhatsApp.</p>
+      )}
+    </div>
+  </section>
+
+  <CtaBand title={`Estruturando ${s.tipoUnidadeMensagem.startsWith('Unidade') ? 'uma ' : ''}${s.tipoUnidadeMensagem}?`} text="Envie a lista de ambientes e equipamentos previstos para receber informações organizadas por item." message={msg} location={`solucao-${s.slug}-final`} />
+</BaseLayout>
+
+<style>
+  .sol-hero { display: flex; gap: var(--sp-8); align-items: center; justify-content: space-between; }
+  .sol-hero__img { width: 260px; flex: none; }
+  @media (max-width: 767px) { .sol-hero__img { display: none; } }
+  .sol-hero__cta { margin-top: var(--sp-5); }
+  .ctx { list-style: none; padding: 0; margin: 0 0 var(--sp-6); }
+  .ctx li { padding: var(--sp-5); }
+  .ctx p { font-size: var(--fs-sm); margin: 0; color: var(--c-gray-500); }
+</style>

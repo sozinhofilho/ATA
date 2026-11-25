@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Pending from '../components/Pending.astro';
+import Icon from '../components/Icon.astro';
+import { marca, config } from '../lib/site';
+import { breadcrumbLd } from '../lib/seo';
+import { mensagens } from '../lib/whatsapp';
+import inst from '../data/institucional.json';
+const listas: [string, string[]][] = [
+  ['Fabricantes representados', inst.fabricantesRepresentados],
+  ['Parceiros autorizados', inst.parceirosAutorizados],
+  ['Certificações', inst.certificacoes],
+  ['Experiência comprovada', inst.casosVerificaveis],
+];
+---
+<BaseLayout
+  title="Sobre nós"
+  description={`${marca.nome}: apresentação de soluções de mobiliário e equipamentos médico-hospitalares para instituições públicas de saúde, com atendimento consultivo.`}
+  jsonLd={[breadcrumbLd([{ label: 'Sobre nós', href: '/sobre/' }])]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumb items={[{ label: 'Sobre nós' }]} />
+      <h1>Sobre a {marca.nome}</h1>
+      <p>{marca.sloganSecundario}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container about">
+      <div class="prose">
+        <h2>Quem somos</h2>
+        <p>A {marca.nome} atua na apresentação de soluções de mobiliário e equipamentos médico-hospitalares para instituições públicas de saúde.</p>
+        <p>Nossa atuação busca facilitar a identificação de produtos, especificações técnicas e possibilidades de fornecimento, auxiliando gestores e responsáveis pelas aquisições na obtenção de informações comerciais necessárias aos seus projetos.</p>
+        <p>Trabalhamos com atendimento consultivo, organização de informações e relacionamento com fornecedores do segmento hospitalar.</p>
+
+        <h2>Como atuamos</h2>
+        <ul class="how">
+          <li><Icon name="search" /> <span><strong>Intermediação comercial:</strong> apresentamos produtos de fornecedores do segmento hospitalar. Não somos fabricantes e não comercializamos diretamente pelo site.</span></li>
+          <li><Icon name="clipboard" /> <span><strong>Informação sobre atas:</strong> identificamos atas vigentes relacionadas aos itens procurados e indicamos as fontes oficiais para conferência.</span></li>
+          <li><Icon name="doc" /> <span><strong>Documentação:</strong> encaminhamos fichas técnicas, manuais e documentos fornecidos e autorizados pelos fabricantes.</span></li>
+          <li><Icon name="shield" /> <span><strong>Responsabilidade:</strong> não prometemos aprovação de adesões, dispensa de procedimentos ou condições não confirmadas pelo fornecedor.</span></li>
+        </ul>
+
+        <h2>História</h2>
+        {inst.historia ? <p>{inst.historia}</p> : <Pending label="história da empresa" />}
+
+        <div class="mvv">
+          <div class="card"><h3>Missão</h3>{inst.missao ? <p>{inst.missao}</p> : <Pending label="missão" />}</div>
+          <div class="card"><h3>Visão</h3>{inst.visao ? <p>{inst.visao}</p> : <Pending label="visão" />}</div>
+        </div>
+
+        <h2>Valores</h2>
+        <ul class="values">
+          {inst.valores.map((v) => <li><strong>{v.titulo}.</strong> {v.texto}</li>)}
+        </ul>
+
+        {listas.map(([t, l]) => (
+          <>
+            {l.length > 0 ? <><h2>{t}</h2><ul>{l.map((x) => <li>{x}</li>)}</ul></> : <Pending label={t.toLowerCase()} />}
+          </>
+        ))}
+
+        <h2>Estrutura de atendimento</h2>
+        {inst.estruturaAtendimento ? <p>{inst.estruturaAtendimento}</p> : <p>Atendimento comercial pelo WhatsApp e por e-mail, com retorno organizado por item para listas de equipamentos.</p>}
+
+        <div class="notice" role="note"><Icon name="info" /><p>{config.aviso}</p></div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title="Vamos conversar sobre o seu projeto?" text="Conte quais unidades e equipamentos estão em planejamento. Nossa equipe organiza as informações para você." message={mensagens.geral()} location="sobre-final" />
+</BaseLayout>
+
+<style>
+  .how { list-style: none; padding: 0; display: grid; gap: var(--sp-4); }
+  .how li { display: flex; gap: var(--sp-3); align-items: flex-start; }
+  .how :global(svg) { flex: none; color: var(--c-teal-dark); margin-top: 3px; }
+  .mvv { display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); margin-top: var(--sp-8); }
+  .mvv .card { padding: var(--sp-5); }
+  .mvv p { margin: 0; }
+  .values li { margin-bottom: var(--sp-2); }
+</style>

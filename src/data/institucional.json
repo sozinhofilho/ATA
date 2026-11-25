@@ -1,0 +1,18 @@
+{
+  "_leia_me": "Preencha somente com informações comprovadas e autorizadas. Listas vazias = a seção correspondente NÃO aparece no site. Não inclua números de clientes, contratos ou estados atendidos sem evidência.",
+  "historia": "",
+  "missao": "Facilitar o acesso de instituições públicas de saúde a informações claras sobre mobiliário e equipamentos médico-hospitalares, com atendimento consultivo e responsável.",
+  "visao": "",
+  "valores": [
+    { "titulo": "Transparência", "texto": "Informações comerciais apresentadas com clareza, distinguindo o que está confirmado do que depende de validação." },
+    { "titulo": "Responsabilidade técnica", "texto": "Especificações e documentação divulgadas somente quando fornecidas e autorizadas pelo fabricante ou fornecedor." },
+    { "titulo": "Respeito às regras públicas", "texto": "Apoio comercial que respeita a autonomia, os procedimentos e a análise jurídica de cada órgão." },
+    { "titulo": "Atendimento consultivo", "texto": "Escuta da necessidade da unidade de saúde antes da apresentação de produtos." }
+  ],
+  "parceirosAutorizados": [],
+  "fabricantesRepresentados": [],
+  "certificacoes": [],
+  "casosVerificaveis": [],
+  "fotosAutorizadas": [],
+  "estruturaAtendimento": ""
+}

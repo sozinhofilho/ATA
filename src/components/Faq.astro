@@ -1,0 +1,26 @@
+---
+import Icon from './Icon.astro';
+interface Item { q: string; a: string }
+interface Props { items: Item[] }
+const { items } = Astro.props;
+// Respostas em HTML simples e controlado (texto do próprio projeto, não de visitantes).
+---
+<div class="faq">
+  {items.map((i) => (
+    <details>
+      <summary><span>{i.q}</span><Icon name="chevron-down" size={20} /></summary>
+      <div class="faq__a" set:html={i.a} />
+    </details>
+  ))}
+</div>
+
+<style>
+  .faq { display: grid; gap: var(--sp-3); }
+  details { background: #fff; border: 1px solid var(--c-gray-200); border-radius: var(--radius); }
+  summary { list-style: none; display: flex; justify-content: space-between; align-items: center; gap: var(--sp-4); padding: var(--sp-4) var(--sp-5); cursor: pointer; font-weight: 650; color: var(--c-navy); min-height: 56px; }
+  summary::-webkit-details-marker { display: none; }
+  summary :global(svg) { flex: none; transition: transform .2s; color: var(--c-teal-dark); }
+  details[open] summary :global(svg) { transform: rotate(180deg); }
+  .faq__a { padding: 0 var(--sp-5) var(--sp-4); }
+  .faq__a :global(p:last-child) { margin-bottom: 0; }
+</style>

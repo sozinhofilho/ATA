@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import Field from '../components/Field.astro';
+import { marca, contato, empresa, ANALYTICS_ENABLED } from '../lib/site';
+import { breadcrumbLd } from '../lib/seo';
+const atualizacao = '25/11/2026';
+const encarregado = contato.encarregadoDadosEmail || contato.email;
+---
+<BaseLayout
+  title="Política de Privacidade"
+  description={`Como a ${marca.nome} trata dados pessoais no site e nos canais de atendimento, em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).`}
+  jsonLd={[breadcrumbLd([{ label: 'Política de Privacidade', href: '/politica-de-privacidade/' }])]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumb items={[{ label: 'Política de Privacidade' }]} />
+      <h1>Política de Privacidade</h1>
+      <p>Última atualização: {atualizacao}.</p>
+    </div>
+  </section>
+  <div class="container section">
+    <article class="prose">
+      <p>Esta política explica como dados pessoais são tratados neste site e nos canais de atendimento da {marca.nome}, nos termos da Lei Geral de Proteção de Dados Pessoais (LGPD — Lei nº 13.709/2018).</p>
+
+      <h2>1. Controlador</h2>
+      <p>Razão social: <Field value={empresa.razaoSocial} label="razão social" /><br />
+      CNPJ: <Field value={empresa.cnpj} label="CNPJ" /><br />
+      Endereço: <Field value={empresa.endereco} label="endereço" /><br />
+      Contato do encarregado (DPO): <Field value={contato.encarregadoDadosEmail ? encarregado : ''} label="e-mail do encarregado" /></p>
+
+      <h2>2. Quais dados tratamos</h2>
+      <ul>
+        <li><strong>Navegação no site:</strong> o site é estático e não possui cadastro, login ou área de clientes. O provedor de hospedagem registra dados técnicos de acesso (como endereço IP, data, hora e navegador) para segurança e funcionamento do serviço.</li>
+        <li><strong>Formulários do site:</strong> os dados digitados nos formulários <strong>não são enviados nem armazenados pelo site</strong>. Eles são usados apenas para montar uma mensagem que é aberta no seu WhatsApp ou aplicativo de e-mail; você revisa e decide se a envia.</li>
+        <li><strong>Mensagens recebidas:</strong> quando você nos contata por WhatsApp ou e-mail, tratamos os dados informados (por exemplo: nome, órgão, cargo, município, e-mail, telefone e conteúdo da mensagem).</li>
+        <li><strong>Mensuração de uso:</strong> {ANALYTICS_ENABLED ? 'com o seu consentimento, utilizamos o Google Analytics para medir de forma agregada o uso das páginas e cliques em botões. Nenhum nome, telefone ou e-mail é enviado nessas medições.' : 'no momento, o site não utiliza ferramentas de mensuração. Caso venham a ser utilizadas, serão ativadas somente após o seu consentimento e esta política será atualizada.'}</li>
+      </ul>
+      <p>Não solicitamos CPF nem dados pessoais sensíveis. Pedimos que não sejam enviados dados desnecessários ao atendimento.</p>
+
+      <h2>3. Finalidades e bases legais</h2>
+      <table>
+        <thead><tr><th scope="col">Finalidade</th><th scope="col">Base legal (LGPD, art. 7º)</th></tr></thead>
+        <tbody>
+          <tr><td>Responder solicitações, enviar informações comerciais, documentação técnica e propostas</td><td>Procedimentos preliminares relacionados a contrato, a pedido do titular (inciso V) e legítimo interesse (inciso IX)</td></tr>
+          <tr><td>Segurança e funcionamento do site</td><td>Legítimo interesse (inciso IX)</td></tr>
+          <tr><td>Mensuração de uso (quando ativada)</td><td>Consentimento (inciso I), que pode ser revogado a qualquer momento</td></tr>
+          <tr><td>Cumprimento de obrigações legais e regulatórias</td><td>Obrigação legal (inciso II)</td></tr>
+        </tbody>
+      </table>
+
+      <h2>4. Compartilhamento</h2>
+      <p>Os dados podem ser compartilhados, na medida necessária, com:</p>
+      <ul>
+        <li>fabricantes e fornecedores, quando indispensável para a elaboração de propostas ou a confirmação de disponibilidade, documentação e condições de fornecimento;</li>
+        <li>provedores de serviços utilizados na operação, como hospedagem do site, e-mail e o aplicativo WhatsApp (operado pela Meta), que possuem políticas de privacidade próprias;</li>
+        <li>autoridades públicas, quando exigido por lei ou ordem judicial.</li>
+      </ul>
+      <p>Alguns desses provedores podem processar dados fora do Brasil, observadas as hipóteses de transferência internacional previstas na LGPD.</p>
+
+      <h2>5. Armazenamento e retenção</h2>
+      <p>Mensagens e contatos são mantidos pelo tempo necessário ao atendimento e ao relacionamento comercial, e pelos prazos exigidos em lei. Depois disso, são eliminados ou anonimizados.</p>
+
+      <h2>6. Cookies e armazenamento local</h2>
+      <p>O site não utiliza cookies de publicidade. {ANALYTICS_ENABLED ? 'Cookies de mensuração do Google Analytics só são gravados após o seu aceite no aviso exibido no site. Sua escolha (aceitar ou recusar) fica registrada no armazenamento local do navegador.' : 'Nenhum cookie de mensuração é utilizado no momento.'}</p>
+
+      <h2>7. Seus direitos</h2>
+      <p>Você pode solicitar, a qualquer momento: confirmação da existência de tratamento; acesso aos dados; correção de dados incompletos ou desatualizados; anonimização, bloqueio ou eliminação de dados desnecessários; portabilidade; informação sobre compartilhamentos; revogação do consentimento; e eliminação de dados tratados com base no consentimento (LGPD, art. 18). Envie sua solicitação para <a href={`mailto:${encarregado}`}>{encarregado}</a>.</p>
+
+      <h2>8. Segurança</h2>
+      <p>Adotamos medidas técnicas e administrativas razoáveis para proteger os dados, como conexão segura (HTTPS), ausência de banco de dados público no site e acesso restrito às mensagens recebidas.</p>
+
+      <h2>9. Alterações</h2>
+      <p>Esta política pode ser atualizada para refletir mudanças na operação ou na legislação. A data da última atualização é indicada no início da página.</p>
+    </article>
+  </div>
+</BaseLayout>

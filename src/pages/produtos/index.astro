@@ -1,0 +1,216 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import SearchBox from '../../components/SearchBox.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import Icon from '../../components/Icon.astro';
+import { products, categories, allCategories, ambientesLabel } from '../../lib/catalog';
+import { breadcrumbLd, itemListLd } from '../../lib/seo';
+import { waLink, mensagens } from '../../lib/whatsapp';
+
+const sorted = [...products].sort((a, b) => Number(b.destaque) - Number(a.destaque) || (Number(a.ordem_destaque) || 999) - (Number(b.ordem_destaque) || 999) || a.nome.localeCompare(b.nome, 'pt-BR'));
+const uniq = (arr: string[]) => [...new Set(arr.filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+const marcas = uniq(products.map((p) => p.marca));
+const fabricantes = uniq(products.map((p) => p.fabricante));
+const tipos = uniq(products.map((p) => p.tipo_equipamento));
+const ambientes = Object.entries(ambientesLabel).filter(([k]) => products.some((p) => p.ambientes.includes(k)));
+const subcats = allCategories.flatMap((c) => c.subcategorias.map((s) => ({ ...s, cat: c.slug, count: products.filter((p) => p.categoria === c.slug && p.subcategoria === s.slug).length }))).filter((s) => s.count > 0);
+const hasCatmat = products.some((p) => p.catmat);
+const hasRenem = products.some((p) => p.renem);
+const hasAta = products.some((p) => p.ata_confirmada);
+const crumbs = [{ label: 'Produtos' }];
+---
+<BaseLayout
+  title="Catálogo de mobiliário e equipamentos hospitalares"
+  description="Pesquise mobiliário e equipamentos hospitalares por nome, categoria, marca ou código RENEM e solicite proposta ou consulta de Ata de Registro de Preços."
+  jsonLd={[breadcrumbLd([{ label: 'Produtos', href: '/produtos/' }]), itemListLd('Catálogo de produtos', sorted.slice(0, 30))]}
+  showHeaderSearch={false}
+>
+  <section class="page-hero catalog-hero">
+    <div class="container">
+      <Breadcrumb items={crumbs} />
+      <h1>Catálogo de produtos</h1>
+      <p class="catalog-hero__intro">Uma vitrine para localizar equipamentos e iniciar uma conversa comercial: sem carrinho, sem cadastro e sem preços não validados.</p>
+      <SearchBox id="busca-catalogo" size="lg" inline location="catalogo" placeholder="Nome, categoria, marca ou RENEM" />
+    </div>
+  </section>
+
+  <div class="container catalog" data-catalog>
+    <aside class="filters" id="filtros" aria-labelledby="filtros-title" data-filters-panel>
+      <div class="filters__head">
+        <h2 id="filtros-title">Filtros</h2>
+        <button type="button" class="icon-btn filters__close" data-filters-close aria-label="Fechar filtros"><Icon name="close" /></button>
+      </div>
+      <form class="filters__form" data-filters onsubmit="return false">
+        <fieldset>
+          <legend>Categoria</legend>
+          {categories.map((c) => (
+            <label class="check"><input type="checkbox" name="categoria" value={c.slug} /><span>{c.nome}</span><small>{c.count}</small></label>
+          ))}
+        </fieldset>
+
+        <fieldset data-subcats hidden>
+          <legend>Subcategoria</legend>
+          {subcats.map((s) => (
+            <label class="check" data-cat={s.cat}><input type="checkbox" name="subcategoria" value={s.slug} /><span>{s.nome}</span><small>{s.count}</small></label>
+          ))}
+        </fieldset>
+
+        {marcas.length > 0 && (
+          <div class="field">
+            <label for="f-marca">Marca</label>
+            <select id="f-marca" name="marca" class="select"><option value="">Todas as marcas</option>{marcas.map((m) => <option value={m}>{m}</option>)}</select>
+          </div>
+        )}
+        {fabricantes.length > 0 && (
+          <div class="field">
+            <label for="f-fabricante">Fabricante</label>
+            <select id="f-fabricante" name="fabricante" class="select"><option value="">Todos os fabricantes</option>{fabricantes.map((m) => <option value={m}>{m}</option>)}</select>
+          </div>
+        )}
+        {tipos.length > 0 && (
+          <div class="field">
+            <label for="f-tipo">Tipo de equipamento</label>
+            <select id="f-tipo" name="tipo" class="select"><option value="">Todos os tipos</option>{tipos.map((m) => <option value={m}>{m}</option>)}</select>
+          </div>
+        )}
+
+        <fieldset>
+          <legend>Ambiente de utilização</legend>
+          {ambientes.map(([k, label]) => (
+            <label class="check"><input type="checkbox" name="ambiente" value={k} /><span>{label}</span></label>
+          ))}
+        </fieldset>
+
+        {hasRenem && (
+          <div class="field">
+            <label for="f-renem">Código RENEM</label>
+            <input id="f-renem" name="renem" class="input" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="Ex.: 1981" />
+          </div>
+        )}
+        {hasCatmat && (
+          <div class="field">
+            <label for="f-catmat">Código CATMAT</label>
+            <input id="f-catmat" name="catmat" class="input" inputmode="numeric" pattern="[0-9]*" autocomplete="off" />
+          </div>
+        )}
+        {hasAta && (
+          <label class="check check--strong"><input type="checkbox" name="ata" value="1" /><span>Somente disponíveis para consulta em ata</span></label>
+        )}
+
+        <div class="filters__actions">
+          <button type="button" class="btn btn--outline btn--block" data-clear>Limpar filtros</button>
+          <button type="button" class="btn btn--block filters__apply" data-filters-close>Ver resultados</button>
+        </div>
+      </form>
+    </aside>
+    <div class="filters-backdrop" data-filters-backdrop hidden></div>
+
+    <section class="results" aria-labelledby="resultados-title">
+      <div class="results__toolbar">
+        <h2 id="resultados-title" class="results__title">Resultados do catálogo</h2>
+        <p class="results__count" aria-live="polite" data-count>{products.length > 12 ? `1–12 de ${products.length} produtos encontrados` : `${products.length} produtos encontrados`}</p>
+        <div class="results__controls">
+          <button type="button" class="btn btn--outline btn--sm filters-toggle" data-filters-open aria-controls="filtros" aria-expanded="false">
+            <Icon name="filter" size={18} /> Filtros <span class="filters-toggle__n" data-filter-n hidden></span>
+          </button>
+          <label class="sort">
+            <span class="sr-only">Ordenar resultados</span>
+            <Icon name="sort" size={18} />
+            <select class="select" name="ordem" data-sort>
+              <option value="relevancia">Ordenar: relevância</option>
+              <option value="az">Nome de A a Z</option>
+              <option value="za">Nome de Z a A</option>
+              <option value="recentes">Adicionados recentemente</option>
+              <option value="destaque">Produtos em destaque</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="chips" data-chips hidden aria-label="Filtros aplicados"></div>
+
+      <div class="grid grid--products" data-grid>
+        {sorted.map((p, i) => <ProductCard product={p} eager={i < 3} listName="catalogo" hidden={i >= 12} />)}
+      </div>
+
+      <div class="empty card" data-empty hidden>
+        <Icon name="search" size={32} />
+        <h2>Nenhum produto encontrado</h2>
+        <p>Revise os termos ou limpe os filtros. Se o equipamento não estiver no catálogo publicado, nossa equipe pode verificar a disponibilidade.</p>
+        <div class="btn-row">
+          <button type="button" class="btn btn--outline" data-clear>Limpar filtros</button>
+          <a href={waLink(mensagens.geral())} class="btn btn--whatsapp" target="_blank" rel="noopener" data-track="whatsapp_click" data-track-location="catalogo-vazio" data-empty-wa><Icon name="whatsapp" /> Consultar pelo WhatsApp</a>
+        </div>
+      </div>
+
+      <nav class="pagination" aria-label="Paginação do catálogo" data-pagination hidden></nav>
+      <noscript><style>{'[data-grid] .pcard[hidden]{display:flex!important}'}</style></noscript>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  import { initCatalog } from '../../scripts/catalog';
+  initCatalog();
+</script>
+
+<style>
+  .catalog-hero { padding-bottom: var(--sp-8); }
+  .catalog-hero__intro { margin-bottom: var(--sp-5) !important; color: var(--c-gray-500); }
+  .catalog { display: grid; gap: var(--sp-6); padding-block: var(--sp-8) var(--sp-16); }
+  @media (min-width: 1024px) { .catalog { grid-template-columns: 270px 1fr; align-items: start; } }
+
+  .filters { background: var(--c-gray-50); border: 1px solid var(--c-gray-200); border-radius: var(--radius); padding: var(--sp-5); }
+  .filters__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-2); }
+  .filters__head h2 { font-size: var(--fs-md); margin: 0; }
+  .filters__form { display: grid; gap: var(--sp-5); }
+  .filters fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .filters .field label { font-size: var(--fs-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--c-gray-500); }
+  .filters legend { font-size: var(--fs-xs); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--c-gray-500); margin-bottom: var(--sp-2); }
+  .check { display: flex; align-items: center; gap: var(--sp-2); min-height: 36px; font-size: var(--fs-sm); cursor: pointer; }
+  .check input { width: 18px; height: 18px; accent-color: var(--c-teal); flex: none; }
+  .check span { flex: 1; }
+  .check small { color: var(--c-gray-500); font-size: var(--fs-xs); }
+  .check--strong { font-weight: 600; color: var(--c-navy); }
+  .check[hidden] { display: none; }
+  .filters__actions { display: grid; gap: var(--sp-2); }
+  .filters__close, .filters__apply { display: none !important; }
+  .filters-backdrop { display: none; }
+
+  @media (max-width: 1023px) {
+    .filters { position: fixed; inset: 0 0 0 auto; width: min(380px, 92vw); z-index: 70; border-radius: 0; overflow-y: auto; transform: translateX(100%); visibility: hidden; transition: transform .2s, visibility .2s; background: #fff; }
+    .filters.is-open { transform: none; visibility: visible; }
+    .filters__close { display: inline-grid !important; }
+    .filters__apply { display: inline-flex !important; }
+    .filters__actions { position: sticky; bottom: calc(-1 * var(--sp-5)); background: #fff; padding-block: var(--sp-3); }
+    .filters-backdrop:not([hidden]) { display: block; position: fixed; inset: 0; background: rgba(16,46,67,.45); z-index: 65; }
+  }
+
+  .results__toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3) var(--sp-4); margin-bottom: var(--sp-4); }
+  .results__title { font-size: var(--fs-md); margin: 0; }
+  .results__count { margin: 0; min-height: 1.6em; color: var(--c-gray-500); font-size: var(--fs-sm); }
+  .results__controls { display: flex; gap: var(--sp-2); margin-left: auto; }
+  .filters-toggle { display: inline-flex; }
+  @media (min-width: 1024px) { .filters-toggle { display: none; } }
+  @media (max-width: 559px) { .results__controls { width: 100%; } .results__controls > * { flex: 1; } }
+  .filters-toggle__n { background: var(--c-teal); color: #fff; border-radius: 999px; min-width: 20px; height: 20px; font-size: 12px; display: inline-grid; place-items: center; padding: 0 6px; }
+  .sort { display: flex; align-items: center; gap: 6px; color: var(--c-gray-500); }
+  .sort .select { min-height: 40px; padding-block: .4rem; font-size: var(--fs-sm); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-bottom: var(--sp-4); }
+  :global(.chip) { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 4px 8px 4px 12px; border-radius: 999px; border: 1px solid var(--c-teal); background: var(--c-sky); color: var(--c-navy); font-size: var(--fs-xs); font-weight: 600; cursor: pointer; }
+  :global(.chip:hover) { background: var(--c-teal-soft); }
+  :global(.chip__x) { font-size: 16px; line-height: 1; }
+  :global(.chip--clear) { border-color: transparent; background: none; color: var(--c-teal-dark); text-decoration: underline; }
+
+  .empty { padding: var(--sp-10) var(--sp-6); text-align: center; display: grid; justify-items: center; gap: var(--sp-2); }
+  .empty :global(svg) { color: var(--c-teal-dark); }
+  .empty p { max-width: 52ch; color: var(--c-gray-500); }
+  .empty .btn-row { justify-content: center; }
+
+  .pagination { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: var(--sp-8); }
+  :global(.pagination button) { min-width: 44px; min-height: 44px; border-radius: var(--radius-sm); border: 1px solid var(--c-gray-300); background: #fff; color: var(--c-navy); font-weight: 600; cursor: pointer; padding: 0 12px; }
+  :global(.pagination button[aria-current="page"]) { background: var(--c-teal); border-color: var(--c-teal); color: #fff; }
+  :global(.pagination button:disabled) { opacity: .45; cursor: default; }
+</style>

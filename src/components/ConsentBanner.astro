@@ -1,0 +1,46 @@
+---
+// Exibido somente quando GA4 ou GTM estão configurados. Scripts de mensuração só carregam após "Aceitar".
+---
+<div class="consent" role="region" aria-label="Preferências de cookies" hidden data-consent>
+  <p>
+    Utilizamos cookies de mensuração (Google Analytics) para entender o uso do site e melhorar o catálogo. Nenhum dado de contato é enviado nessas medições.
+    Saiba mais na <a href="/politica-de-privacidade/">Política de Privacidade</a>.
+  </p>
+  <div class="btn-row">
+    <button type="button" class="btn btn--sm" data-consent-accept>Aceitar</button>
+    <button type="button" class="btn btn--outline btn--sm" data-consent-reject>Recusar</button>
+  </div>
+</div>
+
+<script>
+  import { CONSENT_KEY } from '../scripts/analytics';
+  const el = document.querySelector<HTMLElement>('[data-consent]')!;
+  const cfg = window.__NEXUS_ANALYTICS__;
+  const read = () => { try { return localStorage.getItem(CONSENT_KEY); } catch { return null; } };
+  const write = (v: string) => { try { localStorage.setItem(CONSENT_KEY, v); } catch { /* navegação privada */ } };
+
+  function load() {
+    if (!cfg) return;
+    window.dataLayer = window.dataLayer || [];
+    if (cfg.gtm) {
+      window.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
+      const s = document.createElement('script'); s.async = true; s.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(cfg.gtm)}`; document.head.appendChild(s);
+    } else if (cfg.ga4) {
+      const s = document.createElement('script'); s.async = true; s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(cfg.ga4)}`; document.head.appendChild(s);
+      window.gtag = function () { window.dataLayer!.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', cfg.ga4, { anonymize_ip: true });
+    }
+  }
+
+  const choice = read();
+  if (choice === 'granted') load();
+  else if (choice !== 'denied') el.hidden = false;
+  el.querySelector('[data-consent-accept]')!.addEventListener('click', () => { write('granted'); el.hidden = true; load(); });
+  el.querySelector('[data-consent-reject]')!.addEventListener('click', () => { write('denied'); el.hidden = true; });
+</script>
+
+<style>
+  .consent { position: fixed; left: 16px; right: 16px; bottom: 84px; z-index: 45; max-width: 560px; background: #fff; border: 1px solid var(--c-gray-200); border-radius: var(--radius); box-shadow: 0 12px 32px rgba(16,46,67,.18); padding: var(--sp-4); font-size: var(--fs-sm); }
+  @media (min-width: 900px) { .consent { bottom: 16px; left: 16px; right: auto; } }
+</style>

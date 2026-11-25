@@ -1,0 +1,157 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Faq from '../components/Faq.astro';
+import Icon from '../components/Icon.astro';
+import { breadcrumbLd, faqLd } from '../lib/seo';
+import { mensagens } from '../lib/whatsapp';
+import { marca } from '../lib/site';
+import { faqHome } from '../data/faq';
+
+const toc = [
+  ['srp', 'Sistema de Registro de Preços'],
+  ['ata', 'Ata de Registro de Preços'],
+  ['ata-contrato', 'Diferença entre ata e contrato'],
+  ['papeis', 'Gerenciador, participante e não participante'],
+  ['adesao', 'O que é a adesão a uma ata'],
+  ['requisitos', 'Requisitos da adesão'],
+  ['limites', 'Limites quantitativos'],
+  ['vigencia', 'Vigência'],
+  ['formalizacao', 'Formalização contratual'],
+  ['passo-a-passo', 'Passo a passo resumido'],
+  ['normas', 'Normas federais e regulamentos locais'],
+  ['fontes', 'Fontes oficiais'],
+];
+const CONSULTA = '25/11/2026';
+const faqAdesao = faqHome.slice(0, 3);
+---
+<BaseLayout
+  title="Como funciona a adesão a Atas de Registro de Preços"
+  description="Sistema de Registro de Preços e adesão a atas: requisitos, limites e vigência, conforme a Lei nº 14.133/2021 e o Decreto nº 11.462/2023."
+  jsonLd={[breadcrumbLd([{ label: 'Como comprar', href: '/como-comprar/' }]), faqLd(faqAdesao)]}
+  ogType="article"
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumb items={[{ label: 'Como comprar' }]} />
+      <h1>Como funciona a aquisição por Ata de Registro de Preços</h1>
+      <p>Guia informativo sobre o Sistema de Registro de Preços e a adesão a atas, com base na Lei nº 14.133/2021 e no Decreto Federal nº 11.462/2023. Conteúdo de caráter geral, que não substitui a análise da assessoria jurídica e do controle interno do órgão.</p>
+    </div>
+  </section>
+
+  <div class="container guide">
+    <nav class="guide__toc" aria-labelledby="toc-title">
+      <h2 id="toc-title">Nesta página</h2>
+      <ol>{toc.map(([id, t]) => <li><a href={`#${id}`}>{t}</a></li>)}</ol>
+    </nav>
+
+    <article class="prose guide__body">
+      <div class="notice" role="note">
+        <Icon name="info" />
+        <p><strong>Nosso papel:</strong> a {marca.nome} é uma empresa privada que fornece informações e suporte comercial. Não somos autoridade jurídica, não conduzimos licitações e não decidimos sobre adesões. A decisão de contratar, o procedimento adequado e sua fundamentação cabem exclusivamente ao órgão público.</p>
+      </div>
+
+      <h2 id="srp">O que é o Sistema de Registro de Preços</h2>
+      <p>O Sistema de Registro de Preços (SRP) é o conjunto de procedimentos para registro formal de preços relativos a prestação de serviços, obras e aquisição e locação de bens para contratações futuras (Lei nº 14.133/2021, art. 6º, inciso XLV). Ele é realizado por licitação, nas modalidades pregão ou concorrência, ou por contratação direta nas hipóteses legais, e está disciplinado nos arts. 82 a 86 da lei.</p>
+      <p>É indicado, por exemplo, quando há necessidade de contratações frequentes, entregas parceladas, atendimento a mais de um órgão ou quando não é possível definir previamente o quantitativo exato a ser demandado.</p>
+
+      <h2 id="ata">O que é uma Ata de Registro de Preços</h2>
+      <p>A ata é o documento vinculativo e obrigacional, com característica de compromisso para futura contratação, no qual são registrados o objeto, os preços, os fornecedores, os órgãos participantes e as condições a serem praticadas (art. 6º, inciso XLVI). Os atos relativos às atas são divulgados no Portal Nacional de Contratações Públicas (PNCP).</p>
+
+      <h2 id="ata-contrato">Diferença entre ata e contrato</h2>
+      <table>
+        <thead><tr><th scope="col">Ata de Registro de Preços</th><th scope="col">Contrato</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Ata de Registro de Preços">Registra preços e condições para contratações futuras.</td><td data-label="Contrato">Formaliza uma contratação específica, com quantidades, prazos e obrigações definidos.</td></tr>
+          <tr><td data-label="Ata de Registro de Preços">Não obriga a Administração a contratar.</td><td data-label="Contrato">Gera obrigações de execução e de pagamento entre as partes.</td></tr>
+          <tr><td data-label="Ata de Registro de Preços">Vigência própria (art. 84).</td><td data-label="Contrato">Vigência própria, definida nos termos da lei e do instrumento.</td></tr>
+        </tbody>
+      </table>
+      <p>Em outras palavras, a ata é o “catálogo de preços e condições” já licitado; cada aquisição efetiva depende da formalização de um contrato ou instrumento equivalente pelo órgão.</p>
+
+      <h2 id="papeis">Papel do órgão gerenciador, do participante e do não participante</h2>
+      <ul>
+        <li><strong>Órgão gerenciador:</strong> conduz o procedimento para registro de preços e gerencia a ata dele decorrente, inclusive quanto às solicitações de adesão.</li>
+        <li><strong>Órgão participante:</strong> participa dos procedimentos iniciais (em regra, por meio da Intenção de Registro de Preços — IRP) e integra a ata com quantitativos próprios.</li>
+        <li><strong>Órgão não participante:</strong> não participou dos procedimentos iniciais e pode, se atendidos os requisitos, aderir à ata durante sua vigência (a chamada “adesão”).</li>
+      </ul>
+
+      <h2 id="adesao">O que é a adesão a uma ata</h2>
+      <p>Adesão é a utilização, por um órgão não participante, de uma ata de registro de preços vigente de outro órgão, para contratar o mesmo objeto nas condições registradas. Ela é uma faculdade condicionada, e não uma autorização automática para contratar: depende de requisitos legais, de limites quantitativos, da aceitação do gerenciador e do fornecedor e da instrução do processo pelo próprio órgão.</p>
+      <p>A adesão também não deve ser usada para contornar o planejamento da contratação ou interromper uma licitação em andamento sem a devida motivação: a escolha do procedimento é decisão técnica e jurídica de cada órgão.</p>
+
+      <h2 id="requisitos">Requisitos da adesão</h2>
+      <p>Conforme o art. 86, § 2º, da Lei nº 14.133/2021, o órgão não participante pode aderir à ata desde que cumpridos os seguintes requisitos:</p>
+      <ol>
+        <li><strong>Justificativa da vantagem da adesão</strong>, inclusive em situações de provável desabastecimento ou descontinuidade de serviço público;</li>
+        <li><strong>Demonstração de que os valores registrados são compatíveis com os praticados no mercado</strong>, com pesquisa de preços na forma do art. 23 da lei (análise de vantajosidade);</li>
+        <li><strong>Prévias consulta e aceitação</strong> do órgão gerenciador e do fornecedor.</li>
+      </ol>
+      <p>Além disso, o órgão deve verificar a <strong>compatibilidade técnica</strong> do objeto registrado com a sua necessidade (especificações, configuração, acessórios, assistência técnica e garantia), a existência de previsão de adesões no edital e na ata, e eventuais requisitos adicionais do regulamento aplicável (no âmbito federal, o Decreto nº 11.462/2023) e do tribunal de contas competente.</p>
+
+      <h2 id="limites">Limites quantitativos</h2>
+      <ul>
+        <li>As aquisições por adesão não podem exceder, <strong>por órgão ou entidade</strong>, 50% dos quantitativos dos itens registrados na ata para o órgão gerenciador e os órgãos participantes (art. 86, § 4º).</li>
+        <li>O quantitativo decorrente das adesões não pode exceder, <strong>na totalidade</strong>, o dobro do quantitativo de cada item registrado para o gerenciador e participantes, independentemente do número de órgãos que aderirem (art. 86, § 5º).</li>
+        <li>Há tratamento específico para adesões de estados, Distrito Federal e municípios a atas do Poder Executivo federal destinadas à execução descentralizada de programas ou projetos federais, inclusive para fins de transferências voluntárias (art. 86, § 6º). Programas do Ministério da Saúde costumam publicar guias próprios para essas adesões.</li>
+      </ul>
+      <p>Por isso, o <strong>saldo disponível para adesões</strong> precisa ser confirmado junto ao órgão gerenciador no momento da consulta.</p>
+
+      <h2 id="vigencia">Vigência</h2>
+      <p>O prazo de vigência da ata é de 1 (um) ano e pode ser prorrogado por igual período, desde que comprovado o preço vantajoso (art. 84). A adesão só é possível enquanto a ata estiver vigente; contratos dela decorrentes seguem sua própria vigência.</p>
+
+      <h2 id="formalizacao">Formalização contratual</h2>
+      <p>Autorizada a adesão pelo gerenciador e aceita pelo fornecedor, o órgão aderente instrui seu processo, formaliza a contratação (contrato ou instrumento equivalente, como nota de empenho, nos casos admitidos) e publica os atos exigidos, inclusive no PNCP. As condições de entrega, garantia e assistência técnica seguem o que foi registrado na ata e formalizado no contrato.</p>
+
+      <h2 id="passo-a-passo">Passo a passo resumido</h2>
+      <ol class="steps-list">
+        <li>O órgão identifica os equipamentos necessários e suas especificações.</li>
+        <li>Nossa equipe apresenta produtos e atas vigentes que podem atender, com link para a fonte oficial.</li>
+        <li>São disponibilizadas informações comerciais e a documentação técnica pertinente.</li>
+        <li>O órgão avalia a vantajosidade, a compatibilidade técnica e a viabilidade jurídica e consulta o gerenciador.</li>
+        <li>Com as anuências do gerenciador e do fornecedor, o órgão formaliza a contratação.</li>
+        <li>O fornecedor realiza o fornecimento conforme as condições formalizadas.</li>
+      </ol>
+
+      <h2 id="normas">Normas federais e regulamentos estaduais e municipais</h2>
+      <p>A Lei nº 14.133/2021 tem normas gerais aplicáveis a todos os entes. O <strong>Decreto nº 11.462/2023</strong> regulamenta o SRP no âmbito da <strong>administração pública federal</strong>. Estados, Distrito Federal e municípios podem editar regulamentos próprios ou adotar regulamentos federais, e os tribunais de contas estaduais podem estabelecer orientações adicionais.</p>
+      <p>Alguns pontos são objeto de interpretações divergentes, como a adesão a atas gerenciadas por municípios: a lei disciplina a adesão por órgãos não participantes a atas de gerenciadores federais, estaduais ou distritais (art. 86, § 3º). Também é vedado a órgãos federais aderir a atas estaduais, distritais ou municipais (art. 86, § 8º). Esses temas devem ser analisados pela assessoria jurídica de cada órgão.</p>
+
+      <h2 id="fontes">Fontes oficiais</h2>
+      <ul>
+        <li><a href="https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14133.htm" target="_blank" rel="noopener external">Lei nº 14.133, de 1º de abril de 2021 — Planalto</a></li>
+        <li><a href="https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/decreto/d11462.htm" target="_blank" rel="noopener external">Decreto nº 11.462, de 31 de março de 2023 — Planalto</a></li>
+        <li><a href="https://www.gov.br/pncp/pt-br" target="_blank" rel="noopener external">Portal Nacional de Contratações Públicas (PNCP)</a></li>
+        <li><a href="https://www.gov.br/compras/pt-br" target="_blank" rel="noopener external">Compras.gov.br — Ministério da Gestão e da Inovação em Serviços Públicos</a></li>
+        <li><a href="https://licitacoesecontratos.tcu.gov.br/" target="_blank" rel="noopener external">Licitações e Contratos: orientações e jurisprudência do TCU</a></li>
+        <li><a href="https://portalfns.saude.gov.br/" target="_blank" rel="noopener external">Fundo Nacional de Saúde — RENEM e financiamento de equipamentos</a></li>
+        <li><a href="https://www.gov.br/saude/pt-br/assuntos/novo-pac-saude" target="_blank" rel="noopener external">Ministério da Saúde — Novo PAC Saúde (atas e guias de adesão)</a></li>
+      </ul>
+      <p class="small muted">Conteúdo revisado em {CONSULTA}. A legislação e os regulamentos podem ser alterados; confira sempre o texto vigente nas fontes oficiais.</p>
+    </article>
+  </div>
+
+  <section class="section section--gray" aria-labelledby="faq-c">
+    <div class="container">
+      <h2 id="faq-c">Dúvidas frequentes sobre adesão</h2>
+      <Faq items={faqAdesao} />
+    </div>
+  </section>
+
+  <CtaBand title="Quer verificar atas vigentes para os equipamentos da sua unidade?" text="Informe os itens, quantidades e município. Pesquisamos as possibilidades e indicamos o que depende de confirmação." message={mensagens.atas()} buttonLabel="Solicitar consulta de ata" location="como-comprar-final" secondary={{ href: '/atas/', label: 'Página de atas' }} />
+</BaseLayout>
+
+<style>
+  .guide { display: grid; gap: var(--sp-8); padding-block: var(--sp-10) var(--sp-16); }
+  @media (min-width: 1024px) { .guide { grid-template-columns: 260px 1fr; align-items: start; } .guide__toc { position: sticky; top: calc(var(--header-h) + 16px); } }
+  .guide__toc { background: var(--c-gray-50); border: 1px solid var(--c-gray-200); border-radius: var(--radius); padding: var(--sp-5); font-size: var(--fs-sm); }
+  .guide__toc h2 { font-size: var(--fs-sm); text-transform: uppercase; letter-spacing: .06em; color: var(--c-gray-500); }
+  .guide__toc ol { margin: 0; padding-left: 1.2rem; display: grid; gap: 6px; }
+  .guide__toc a { color: var(--c-navy); text-decoration: none; }
+  .guide__toc a:hover { color: var(--c-teal-dark); text-decoration: underline; }
+  .guide__body h2:first-of-type { margin-top: var(--sp-8); }
+  .guide__body table { margin-bottom: var(--sp-4); font-size: var(--fs-sm); }
+  .guide__body thead th { background: var(--c-sky); color: var(--c-navy); }
+  @media (max-width: 559px) { .guide__body table, .guide__body tbody, .guide__body tr, .guide__body td, .guide__body th { display: block; } .guide__body thead { display: none; } .guide__body td::before { content: attr(data-label); display: block; font-size: var(--fs-xs); font-weight: 700; color: var(--c-teal-dark); text-transform: uppercase; letter-spacing: .05em; } .guide__body tr { border-bottom: 2px solid var(--c-gray-200); } }
+</style>

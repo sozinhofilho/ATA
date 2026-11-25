@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SearchBox from '../components/SearchBox.astro';
+import Icon from '../components/Icon.astro';
+import { categories } from '../lib/catalog';
+import { waLink, mensagens } from '../lib/whatsapp';
+---
+<BaseLayout title="Página não encontrada" description="A página procurada não foi encontrada. Pesquise no catálogo ou navegue pelas categorias." noindex>
+  <section class="section">
+    <div class="container nf">
+      <p class="nf__code" aria-hidden="true">404</p>
+      <h1>Página não encontrada</h1>
+      <p>O endereço pode ter mudado ou o produto pode não estar mais publicado. Pesquise no catálogo:</p>
+      <SearchBox id="busca-404" size="lg" location="404" />
+      <h2>Ou navegue pelas categorias</h2>
+      <ul class="nf__cats">{categories.map((c) => <li><a href={`/categorias/${c.slug}/`}>{c.nome}</a></li>)}</ul>
+      <div class="btn-row nf__cta">
+        <a href="/" class="btn btn--outline">Ir para o início</a>
+        <a href={waLink(mensagens.geral())} class="btn btn--whatsapp" target="_blank" rel="noopener" data-track="whatsapp_click" data-track-location="404"><Icon name="whatsapp" /> Falar com a equipe</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .nf { max-width: 760px; text-align: center; }
+  .nf__code { font-size: 5rem; font-weight: 800; color: var(--c-teal-dark); margin: 0; line-height: 1; }
+  .nf h2 { font-size: var(--fs-md); margin-top: var(--sp-8); }
+  .nf__cats { list-style: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-2); }
+  .nf__cats a { display: inline-block; padding: 6px 12px; border: 1px solid var(--c-gray-200); border-radius: 999px; text-decoration: none; color: var(--c-navy); font-size: var(--fs-sm); }
+  .nf__cta { justify-content: center; margin-top: var(--sp-8); }
+</style>

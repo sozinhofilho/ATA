@@ -1,0 +1,158 @@
+[
+  {
+    "slug": "ubs",
+    "ambiente": "ubs",
+    "nome": "Unidades Básicas de Saúde",
+    "nomeCurto": "UBS",
+    "tipoUnidadeMensagem": "Unidade Básica de Saúde (UBS)",
+    "ilustracao": "mesa-exame",
+    "titulo": "Mobiliário e equipamentos para Unidades Básicas de Saúde",
+    "resumo": "Consultórios, salas de enfermagem, procedimentos e acolhimento na atenção primária.",
+    "introducao": "A estruturação de uma UBS envolve consultórios, salas de acolhimento, vacinação, curativos e procedimentos. Reunimos no catálogo itens de mobiliário clínico, instrumentos de avaliação e equipamentos de apoio frequentemente considerados nesses ambientes.",
+    "contexto": [
+      { "titulo": "Consultórios médicos e de enfermagem", "texto": "Mesas de exames, escadas de dois degraus, banquetas, biombos e instrumentos de avaliação clínica." },
+      { "titulo": "Salas de procedimentos e curativos", "texto": "Carros de curativos, mesas auxiliares, suportes de soro e mobiliário de apoio." },
+      { "titulo": "Avaliação antropométrica", "texto": "Balanças antropométricas adultas e infantis, para acompanhamento nutricional e de crescimento." },
+      { "titulo": "Observação e acolhimento", "texto": "Poltronas, macas e itens de apoio para permanência temporária de pacientes." }
+    ],
+    "categorias": ["consultorios-e-atencao-basica", "enfermagem-e-apoio", "mobiliario-hospitalar"]
+  },
+  {
+    "slug": "upa",
+    "ambiente": "upa",
+    "nome": "Unidades de Pronto Atendimento",
+    "nomeCurto": "UPA",
+    "tipoUnidadeMensagem": "Unidade de Pronto Atendimento (UPA)",
+    "ilustracao": "carro-emergencia",
+    "titulo": "Equipamentos para Unidades de Pronto Atendimento",
+    "resumo": "Urgência, monitoramento, observação e transporte de pacientes.",
+    "introducao": "Unidades de pronto atendimento exigem equipamentos de urgência, monitoramento contínuo, macas de transporte e mobiliário para salas de observação. O catálogo organiza esses itens para facilitar a identificação e a consulta comercial.",
+    "contexto": [
+      { "titulo": "Sala vermelha e estabilização", "texto": "Desfibriladores, carros de emergência, reanimadores e monitores multiparâmetros." },
+      { "titulo": "Observação", "texto": "Camas, poltronas, suportes de soro e mesas de cabeceira." },
+      { "titulo": "Transporte de pacientes", "texto": "Carros maca e cadeiras de rodas para deslocamento interno." },
+      { "titulo": "Apoio assistencial", "texto": "Aspiradores, oxímetros e carros de curativos." }
+    ],
+    "categorias": ["urgencia-e-emergencia", "equipamentos-medicos", "macas-e-transporte"]
+  },
+  {
+    "slug": "hospitais",
+    "ambiente": "hospital",
+    "nome": "Hospitais municipais",
+    "nomeCurto": "Hospitais",
+    "tipoUnidadeMensagem": "hospital municipal",
+    "ilustracao": "cama",
+    "titulo": "Soluções para hospitais municipais e regionais",
+    "resumo": "Internação, enfermarias, emergência, monitoramento e lavanderia.",
+    "introducao": "Hospitais municipais concentram internação, emergência, centro de apoio e serviços como lavanderia. Agrupamos categorias do catálogo que costumam compor esses projetos de estruturação e reequipamento.",
+    "contexto": [
+      { "titulo": "Internação e enfermarias", "texto": "Camas Fowler, camas elétricas, mesas de cabeceira e de refeição, poltronas de acompanhante." },
+      { "titulo": "Transporte de pacientes", "texto": "Carros maca, macas de transporte e cadeiras de rodas." },
+      { "titulo": "Emergência e monitoramento", "texto": "Desfibriladores, monitores, bombas de infusão e carros de emergência." },
+      { "titulo": "Apoio e lavanderia", "texto": "Carros de materiais, suportes de hamper, lavadoras e secadoras." }
+    ],
+    "categorias": ["mobiliario-hospitalar", "macas-e-transporte", "urgencia-e-emergencia", "equipamentos-medicos", "lavanderia-hospitalar"]
+  },
+  {
+    "slug": "consultorios",
+    "ambiente": "consultorio",
+    "nome": "Consultórios médicos",
+    "nomeCurto": "Consultórios",
+    "tipoUnidadeMensagem": "consultórios médicos",
+    "ilustracao": "mesa-exame",
+    "titulo": "Mobiliário e instrumentos para consultórios médicos",
+    "resumo": "Mesas de exame, instrumentos clínicos e mobiliário de apoio.",
+    "introducao": "Consultórios de atenção primária e especializada compartilham uma base de mobiliário clínico e instrumentos de avaliação. Os itens abaixo ajudam a montar a lista inicial para a consulta comercial.",
+    "contexto": [
+      { "titulo": "Exame clínico", "texto": "Mesas de exames, escadas e banquetas." },
+      { "titulo": "Avaliação", "texto": "Esfigmomanômetros, estetoscópios, otoscópios e balanças." },
+      { "titulo": "Privacidade e apoio", "texto": "Biombos, mesas auxiliares e suportes." }
+    ],
+    "categorias": ["consultorios-e-atencao-basica", "mobiliario-hospitalar"]
+  },
+  {
+    "slug": "maternidade",
+    "ambiente": "maternidade",
+    "nome": "Maternidades",
+    "nomeCurto": "Maternidade",
+    "tipoUnidadeMensagem": "maternidade",
+    "ilustracao": "berco",
+    "titulo": "Equipamentos para maternidades e atendimento materno-infantil",
+    "resumo": "Berçários, consultórios obstétricos e equipamentos pediátricos.",
+    "introducao": "O atendimento materno-infantil envolve consultórios obstétricos, alojamento conjunto, berçário e acompanhamento do recém-nascido. O catálogo reúne categorias relacionadas a esses ambientes.",
+    "contexto": [
+      { "titulo": "Alojamento conjunto e berçário", "texto": "Berços hospitalares, poltronas de amamentação e camas." },
+      { "titulo": "Consultório obstétrico", "texto": "Mesas ginecológicas, detectores fetais e esfigmomanômetros." },
+      { "titulo": "Acompanhamento do recém-nascido", "texto": "Balanças infantis e equipamentos pediátricos." }
+    ],
+    "categorias": ["maternidade-e-pediatria", "consultorios-e-atencao-basica", "mobiliario-hospitalar"]
+  },
+  {
+    "slug": "centros-de-especialidades",
+    "ambiente": "especialidades",
+    "nome": "Centros de especialidades",
+    "nomeCurto": "Especialidades",
+    "tipoUnidadeMensagem": "centro de especialidades",
+    "ilustracao": "monitor",
+    "titulo": "Equipamentos para centros de especialidades e policlínicas",
+    "resumo": "Atendimento ambulatorial especializado e diagnóstico.",
+    "introducao": "Centros de especialidades e policlínicas combinam consultórios especializados, salas de exames e procedimentos ambulatoriais. Os itens relacionados podem compor listas para estruturação ou ampliação desses serviços.",
+    "contexto": [
+      { "titulo": "Consultórios especializados", "texto": "Mesas de exames, mesas ginecológicas e instrumentos clínicos." },
+      { "titulo": "Exames e diagnóstico", "texto": "Eletrocardiógrafos, monitores e oxímetros." },
+      { "titulo": "Procedimentos ambulatoriais", "texto": "Carros de curativos, mesas auxiliares e focos." }
+    ],
+    "categorias": ["consultorios-e-atencao-basica", "equipamentos-medicos", "enfermagem-e-apoio"]
+  },
+  {
+    "slug": "salas-de-emergencia",
+    "ambiente": "emergencia",
+    "nome": "Salas de emergência",
+    "nomeCurto": "Emergência",
+    "tipoUnidadeMensagem": "sala de emergência",
+    "ilustracao": "desfibrilador",
+    "titulo": "Equipamentos para salas de emergência e estabilização",
+    "resumo": "Desfibrilação, ventilação, monitoramento e carro de emergência.",
+    "introducao": "Salas de emergência demandam equipamentos de suporte à vida organizados e acessíveis. Reunimos as categorias do catálogo relacionadas a atendimento de urgência e estabilização de pacientes.",
+    "contexto": [
+      { "titulo": "Suporte à vida", "texto": "Desfibriladores, cardioversores, reanimadores e ventiladores pulmonares." },
+      { "titulo": "Organização de insumos", "texto": "Carros de emergência com gavetas e acessórios." },
+      { "titulo": "Monitoramento", "texto": "Monitores multiparâmetros, oxímetros e aspiradores." }
+    ],
+    "categorias": ["urgencia-e-emergencia", "equipamentos-medicos"]
+  },
+  {
+    "slug": "enfermarias",
+    "ambiente": "enfermaria",
+    "nome": "Enfermarias",
+    "nomeCurto": "Enfermarias",
+    "tipoUnidadeMensagem": "enfermaria",
+    "ilustracao": "cama",
+    "titulo": "Mobiliário para enfermarias e internação",
+    "resumo": "Leitos, mobiliário de quarto e apoio à enfermagem.",
+    "introducao": "Enfermarias e quartos de internação combinam leitos, mobiliário de apoio ao paciente e ao acompanhante e itens de enfermagem. Consulte as categorias relacionadas abaixo.",
+    "contexto": [
+      { "titulo": "Leitos", "texto": "Camas Fowler mecânicas e elétricas, com acessórios conforme configuração." },
+      { "titulo": "Mobiliário de quarto", "texto": "Mesas de cabeceira, mesas de refeição, poltronas e escadas." },
+      { "titulo": "Apoio à enfermagem", "texto": "Suportes de soro, carros de curativos e suportes de hamper." }
+    ],
+    "categorias": ["mobiliario-hospitalar", "enfermagem-e-apoio"]
+  },
+  {
+    "slug": "lavanderias-hospitalares",
+    "ambiente": "lavanderia",
+    "nome": "Lavanderias hospitalares",
+    "nomeCurto": "Lavanderia",
+    "tipoUnidadeMensagem": "lavanderia hospitalar",
+    "ilustracao": "lavadora",
+    "titulo": "Equipamentos para lavanderias hospitalares",
+    "resumo": "Lavagem, centrifugação, secagem e acabamento de roupas.",
+    "introducao": "O processamento de roupas hospitalares envolve etapas de lavagem, extração, secagem e acabamento, com fluxos separados entre áreas suja e limpa. O dimensionamento deve ser feito pela equipe técnica responsável.",
+    "contexto": [
+      { "titulo": "Lavagem", "texto": "Lavadoras, incluindo modelos com barreira sanitária, quando disponíveis no portfólio." },
+      { "titulo": "Extração e secagem", "texto": "Centrífugas e secadoras." },
+      { "titulo": "Acabamento", "texto": "Calandras e carros de transporte de roupas." }
+    ],
+    "categorias": ["lavanderia-hospitalar", "enfermagem-e-apoio"]
+  }
+]

@@ -1,0 +1,140 @@
+[
+  {
+    "slug": "mobiliario-hospitalar",
+    "nome": "Mobiliário hospitalar",
+    "nomeCurto": "Camas e mobiliário",
+    "ilustracao": "cama",
+    "descricao": "Camas hospitalares, leitos, berços, poltronas, mesas de cabeceira, biombos, escadas e demais itens de mobiliário para internação e atendimento.",
+    "subcategorias": [
+      { "slug": "camas-hospitalares", "nome": "Camas hospitalares" },
+      { "slug": "leitos", "nome": "Leitos" },
+      { "slug": "camas-fowler", "nome": "Camas Fowler" },
+      { "slug": "camas-eletricas", "nome": "Camas elétricas" },
+      { "slug": "bercos-hospitalares", "nome": "Berços hospitalares" },
+      { "slug": "mesas-de-cabeceira", "nome": "Mesas de cabeceira" },
+      { "slug": "poltronas-hospitalares", "nome": "Poltronas hospitalares" },
+      { "slug": "sofas-cama", "nome": "Sofás-cama" },
+      { "slug": "divas", "nome": "Divãs" },
+      { "slug": "biombos", "nome": "Biombos" },
+      { "slug": "escadas", "nome": "Escadas" },
+      { "slug": "bancos-e-mochos", "nome": "Bancos e mochos" }
+    ]
+  },
+  {
+    "slug": "macas-e-transporte",
+    "nome": "Macas e transporte",
+    "nomeCurto": "Macas e transporte",
+    "ilustracao": "maca",
+    "descricao": "Macas hospitalares, carros maca, cadeiras de rodas, cadeiras de banho e equipamentos de mobilidade para transporte seguro de pacientes.",
+    "subcategorias": [
+      { "slug": "macas-hospitalares", "nome": "Macas hospitalares" },
+      { "slug": "carros-maca", "nome": "Carros maca" },
+      { "slug": "macas-de-transporte", "nome": "Macas de transporte" },
+      { "slug": "cadeiras-de-rodas", "nome": "Cadeiras de rodas" },
+      { "slug": "cadeiras-de-banho", "nome": "Cadeiras de banho" },
+      { "slug": "equipamentos-de-mobilidade", "nome": "Equipamentos de mobilidade" }
+    ]
+  },
+  {
+    "slug": "equipamentos-medicos",
+    "nome": "Equipamentos médicos",
+    "nomeCurto": "Equip. médicos",
+    "ilustracao": "monitor",
+    "descricao": "Monitores multiparâmetros, bombas de infusão, eletrocardiógrafos, oxímetros, aspiradores de secreções, detectores fetais e outros equipamentos médico-assistenciais.",
+    "subcategorias": [
+      { "slug": "monitores-multiparametros", "nome": "Monitores multiparâmetros" },
+      { "slug": "bombas-de-infusao", "nome": "Bombas de infusão" },
+      { "slug": "eletrocardiografos", "nome": "Eletrocardiógrafos" },
+      { "slug": "oximetros", "nome": "Oxímetros" },
+      { "slug": "aspiradores-de-secrecoes", "nome": "Aspiradores de secreções" },
+      { "slug": "detectores-fetais", "nome": "Detectores fetais" },
+      { "slug": "outros-equipamentos-medicos", "nome": "Outros equipamentos médico-assistenciais" }
+    ]
+  },
+  {
+    "slug": "urgencia-e-emergencia",
+    "nome": "Urgência e emergência",
+    "nomeCurto": "Emergência",
+    "ilustracao": "carro-emergencia",
+    "descricao": "Desfibriladores, cardioversores, carros de emergência, reanimadores pulmonares, laringoscópios e ventiladores pulmonares.",
+    "subcategorias": [
+      { "slug": "desfibriladores", "nome": "Desfibriladores" },
+      { "slug": "cardioversores", "nome": "Cardioversores" },
+      { "slug": "carros-de-emergencia", "nome": "Carros de emergência" },
+      { "slug": "reanimadores-pulmonares", "nome": "Reanimadores pulmonares" },
+      { "slug": "laringoscopios", "nome": "Laringoscópios" },
+      { "slug": "ventiladores-pulmonares", "nome": "Ventiladores pulmonares" }
+    ]
+  },
+  {
+    "slug": "consultorios-e-atencao-basica",
+    "nome": "Consultórios e atenção básica",
+    "nomeCurto": "Consultórios e UBS",
+    "ilustracao": "mesa-exame",
+    "descricao": "Mesas de exames, mesas ginecológicas, balanças antropométricas, estetoscópios, esfigmomanômetros, otoscópios e instrumentos clínicos.",
+    "subcategorias": [
+      { "slug": "mesas-de-exames", "nome": "Mesas de exames" },
+      { "slug": "mesas-ginecologicas", "nome": "Mesas ginecológicas" },
+      { "slug": "balancas-antropometricas", "nome": "Balanças antropométricas" },
+      { "slug": "estetoscopios", "nome": "Estetoscópios" },
+      { "slug": "esfigmomanometros", "nome": "Esfigmomanômetros" },
+      { "slug": "otoscopios", "nome": "Otoscópios" },
+      { "slug": "termometros-clinicos", "nome": "Termômetros clínicos" },
+      { "slug": "lanternas-clinicas", "nome": "Lanternas clínicas" }
+    ]
+  },
+  {
+    "slug": "maternidade-e-pediatria",
+    "nome": "Maternidade e pediatria",
+    "nomeCurto": "Maternidade",
+    "ilustracao": "berco",
+    "descricao": "Berços, equipamentos neonatais e pediátricos, balanças infantis e equipamentos para atendimento materno-infantil.",
+    "subcategorias": [
+      { "slug": "bercos", "nome": "Berços" },
+      { "slug": "equipamentos-neonatais", "nome": "Equipamentos neonatais" },
+      { "slug": "equipamentos-pediatricos", "nome": "Equipamentos pediátricos" },
+      { "slug": "balancas-infantis", "nome": "Balanças infantis" },
+      { "slug": "atendimento-materno-infantil", "nome": "Atendimento materno-infantil" }
+    ]
+  },
+  {
+    "slug": "enfermagem-e-apoio",
+    "nome": "Enfermagem e apoio hospitalar",
+    "nomeCurto": "Enfermagem e apoio",
+    "ilustracao": "suporte-soro",
+    "descricao": "Carros de curativos, mesas auxiliares, suportes de soro e de hamper, carros de transporte de materiais e acessórios hospitalares.",
+    "subcategorias": [
+      { "slug": "carros-de-curativos", "nome": "Carros de curativos" },
+      { "slug": "mesas-auxiliares", "nome": "Mesas auxiliares" },
+      { "slug": "suportes-de-soro", "nome": "Suportes de soro" },
+      { "slug": "suportes-de-hamper", "nome": "Suportes de hamper" },
+      { "slug": "carros-de-transporte-de-materiais", "nome": "Carros de transporte de materiais" },
+      { "slug": "acessorios-hospitalares", "nome": "Acessórios hospitalares" }
+    ]
+  },
+  {
+    "slug": "lavanderia-hospitalar",
+    "nome": "Lavanderia hospitalar",
+    "nomeCurto": "Lavanderia",
+    "ilustracao": "lavadora",
+    "descricao": "Lavadoras, secadoras, calandras e centrífugas para processamento de roupas hospitalares.",
+    "subcategorias": [
+      { "slug": "lavadoras", "nome": "Lavadoras" },
+      { "slug": "secadoras", "nome": "Secadoras" },
+      { "slug": "calandras", "nome": "Calandras" },
+      { "slug": "centrifugas", "nome": "Centrífugas" }
+    ]
+  },
+  {
+    "slug": "acessorios-e-outros",
+    "nome": "Acessórios e outros equipamentos",
+    "nomeCurto": "Acessórios",
+    "ilustracao": "generico",
+    "descricao": "Equipamentos complementares, materiais permanentes e produtos adicionais autorizados.",
+    "subcategorias": [
+      { "slug": "equipamentos-complementares", "nome": "Equipamentos complementares" },
+      { "slug": "materiais-permanentes", "nome": "Materiais permanentes" },
+      { "slug": "produtos-adicionais", "nome": "Produtos adicionais autorizados" }
+    ]
+  }
+]

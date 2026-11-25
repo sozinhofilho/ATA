@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import CategoryCard from '../../components/CategoryCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { categories, subcategoriesWithProducts } from '../../lib/catalog';
+import { breadcrumbLd } from '../../lib/seo';
+import { mensagens } from '../../lib/whatsapp';
+---
+<BaseLayout
+  title="Categorias de mobiliário e equipamentos hospitalares"
+  description="Categorias do catálogo: mobiliário hospitalar, macas, equipamentos médicos, emergência, consultórios, maternidade, enfermagem e lavanderia."
+  jsonLd={[breadcrumbLd([{ label: 'Categorias', href: '/categorias/' }])]}
+>
+  <section class="page-hero">
+    <div class="container">
+      <Breadcrumb items={[{ label: 'Categorias' }]} />
+      <h1>Categorias de produtos</h1>
+      <p>Escolha uma categoria para ver os produtos publicados e suas subcategorias. São exibidas somente categorias com produtos disponíveis no catálogo.</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <ul class="cat-list">
+        {categories.map((c) => (
+          <li>
+            <CategoryCard href={`/categorias/${c.slug}/`} nome={c.nome} ilustracao={c.ilustracao} count={c.count} descricao={c.descricao} />
+            <ul class="cat-list__subs" aria-label={`Subcategorias de ${c.nome}`}>
+              {subcategoriesWithProducts(c).map((s) => <li><a href={`/produtos/?categoria=${c.slug}&subcategoria=${s.slug}`}>{s.nome} <span>({s.count})</span></a></li>)}
+            </ul>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+  <CtaBand title="Não encontrou a categoria que procura?" text="Envie a lista de equipamentos da sua unidade. Verificamos com os fornecedores o que pode ser atendido." message={mensagens.lista()} buttonLabel="Enviar lista pelo WhatsApp" location="categorias-final" />
+</BaseLayout>
+
+<style>
+  .cat-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-6); grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+  .cat-list > li { display: flex; flex-direction: column; gap: var(--sp-3); }
+  .cat-list__subs { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .cat-list__subs a { display: inline-block; font-size: var(--fs-xs); padding: 4px 10px; border-radius: 999px; background: var(--c-gray-50); border: 1px solid var(--c-gray-200); color: var(--c-navy); text-decoration: none; }
+  .cat-list__subs a:hover { border-color: var(--c-teal); }
+  .cat-list__subs span { color: var(--c-gray-500); }
+</style>

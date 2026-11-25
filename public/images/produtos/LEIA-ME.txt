@@ -1,0 +1,2 @@
+Fotografias de produtos AUTORIZADAS pelo fabricante/fornecedor. Padrão recomendado: WebP, 1200x800 px (3:2), fundo branco, até 150 KB.
+Referencie no catálogo como /images/produtos/nome-do-arquivo.webp (coluna imagem_principal).

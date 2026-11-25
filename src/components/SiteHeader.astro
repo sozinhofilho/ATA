@@ -1,0 +1,126 @@
+---
+import Icon from './Icon.astro';
+import SearchBox from './SearchBox.astro';
+import Logo from './Logo.astro';
+import { NAV, marca, contato } from '../lib/site';
+import { waLink, mensagens } from '../lib/whatsapp';
+interface Props { current: string; showSearch?: boolean; waMessage?: string }
+const { current, showSearch = true, waMessage = mensagens.geral() } = Astro.props;
+const isActive = (href: string) => (href === '/' ? current === '/' : current.startsWith(href));
+const mainNav = NAV.filter((n) => n.href !== '/' && n.href !== '/contato/');
+---
+<header class="site-header" id="topo">
+  <div class="container site-header__bar">
+    <a href="/" class="site-header__logo">
+      <Logo /><span class="sr-only"> — página inicial</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Navegação principal">
+      <ul>
+        {mainNav.map((n) => (
+          <li><a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label === 'Atas disponíveis' ? 'Atas' : n.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      {showSearch && (
+        <button type="button" class="icon-btn" data-toggle-search aria-expanded="false" aria-controls="busca-cabecalho" aria-label="Abrir pesquisa">
+          <Icon name="search" size={22} />
+        </button>
+      )}
+      <a href={waLink(waMessage)} class="icon-btn icon-btn--wa hide-sm" target="_blank" rel="noopener" data-track="whatsapp_click" data-track-location="cabecalho" aria-label={`Falar pelo WhatsApp (${contato.whatsappExibicao}) — abre em nova aba`}>
+        <Icon name="whatsapp" size={22} />
+      </a>
+      <a href="/atas/" class="btn btn--sm site-header__cta" data-track="ata_request_click" data-track-location="cabecalho">Consultar atas</a>
+      <button type="button" class="icon-btn menu-btn" aria-expanded="false" aria-controls="menu-mobile" data-menu-toggle>
+        <span class="sr-only" data-menu-label>Abrir menu</span>
+        <Icon name="menu" size={24} class="menu-btn__open" />
+        <Icon name="close" size={24} class="menu-btn__close" />
+      </button>
+    </div>
+  </div>
+
+  {showSearch && (
+    <div class="site-header__search" id="busca-cabecalho" hidden>
+      <div class="container">
+        <SearchBox id="busca-topo" size="md" location="cabecalho" />
+      </div>
+    </div>
+  )}
+
+  <div class="mobile-menu" id="menu-mobile" hidden>
+    <nav aria-label="Menu principal (celular)">
+      <ul>
+        {NAV.map((n) => (
+          <li><a href={n.href} aria-current={isActive(n.href) && (n.href !== '/' || current === '/') ? 'page' : undefined}>{n.label}<Icon name="chevron" size={18} /></a></li>
+        ))}
+      </ul>
+    </nav>
+    <div class="mobile-menu__cta">
+      <a href="/atas/" class="btn btn--block" data-track="ata_request_click" data-track-location="menu-mobile">Consultar atas</a>
+      <a href={waLink(waMessage)} class="btn btn--whatsapp btn--block" target="_blank" rel="noopener" data-track="whatsapp_click" data-track-location="menu-mobile"><Icon name="whatsapp" /> Falar pelo WhatsApp</a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector('.site-header')!;
+  const menuBtn = header.querySelector<HTMLButtonElement>('[data-menu-toggle]')!;
+  const menu = document.getElementById('menu-mobile')!;
+  const label = menuBtn.querySelector('[data-menu-label]')!;
+  const setMenu = (open: boolean) => {
+    menu.hidden = !open;
+    menuBtn.setAttribute('aria-expanded', String(open));
+    label.textContent = open ? 'Fechar menu' : 'Abrir menu';
+    document.body.classList.toggle('menu-open', open);
+    if (open) menu.querySelector<HTMLElement>('a')?.focus();
+  };
+  menuBtn.addEventListener('click', () => setMenu(menu.hidden));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !menu.hidden) { setMenu(false); menuBtn.focus(); }
+  });
+  window.matchMedia('(min-width: 1100px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
+
+  const searchBtn = header.querySelector<HTMLButtonElement>('[data-toggle-search]');
+  const searchPanel = document.getElementById('busca-cabecalho');
+  searchBtn?.addEventListener('click', () => {
+    if (!searchPanel) return;
+    const open = searchPanel.hidden;
+    searchPanel.hidden = !open;
+    searchBtn.setAttribute('aria-expanded', String(open));
+    searchBtn.setAttribute('aria-label', open ? 'Fechar pesquisa' : 'Abrir pesquisa');
+    if (open) searchPanel.querySelector<HTMLInputElement>('input')?.focus();
+  });
+</script>
+
+<style>
+  .site-header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.97); backdrop-filter: saturate(1.4) blur(6px); border-bottom: 1px solid var(--c-gray-200); }
+  .site-header__bar { display: flex; align-items: center; gap: var(--sp-4); min-height: var(--header-h); }
+  .site-header__logo { flex: none; display: block; }
+  .site-header__logo { text-decoration: none; }
+  .site-nav { display: none; margin-left: auto; }
+  .site-nav ul { display: flex; gap: var(--sp-1); list-style: none; margin: 0; padding: 0; }
+  .site-nav a { display: block; padding: 0.5rem 0.7rem; border-radius: var(--radius-sm); color: var(--c-navy); text-decoration: none; font-weight: 600; font-size: var(--fs-sm); }
+  .site-nav a:hover { background: var(--c-sky); }
+  .site-nav a[aria-current="page"] { color: var(--c-teal-dark); box-shadow: inset 0 -2px 0 var(--c-teal); border-radius: 0; }
+  .site-header__actions { display: flex; align-items: center; gap: var(--sp-2); margin-left: auto; }
+  @media (min-width: 1100px) { .site-nav { display: block; } .site-header__actions { margin-left: var(--sp-2); } .menu-btn { display: none !important; } }
+  .icon-btn { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: var(--radius-sm); border: 1px solid var(--c-gray-200); background: #fff; color: var(--c-navy); cursor: pointer; }
+  .icon-btn:hover { background: var(--c-sky); color: var(--c-navy); }
+  .icon-btn--wa { color: var(--c-whatsapp); }
+  .site-header__cta { display: none; }
+  @media (min-width: 600px) { .site-header__cta { display: inline-flex; } }
+  @media (max-width: 599px) { .hide-sm { display: none; } }
+  .menu-btn :global(.menu-btn__close) { display: none; }
+  .menu-btn[aria-expanded="true"] :global(.menu-btn__open) { display: none; }
+  .menu-btn[aria-expanded="true"] :global(.menu-btn__close) { display: block; }
+  .site-header__search { border-top: 1px solid var(--c-gray-200); padding-block: var(--sp-3); background: var(--c-gray-50); }
+  .mobile-menu { border-top: 1px solid var(--c-gray-200); background: #fff; max-height: calc(100vh - var(--header-h)); overflow-y: auto; padding: var(--sp-2) var(--sp-4) var(--sp-6); }
+  .mobile-menu ul { list-style: none; margin: 0; padding: 0; }
+  .mobile-menu li a { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem var(--sp-2); min-height: 48px; border-bottom: 1px solid var(--c-gray-200); color: var(--c-navy); font-weight: 600; text-decoration: none; }
+  .mobile-menu li a[aria-current="page"] { color: var(--c-teal-dark); }
+  .mobile-menu__cta { display: grid; gap: var(--sp-3); margin-top: var(--sp-5); }
+  :global(body.menu-open) { overflow: hidden; }
+  @media (min-width: 1100px) { .mobile-menu { display: none; } }
+</style>

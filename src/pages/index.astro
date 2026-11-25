@@ -1,0 +1,244 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SearchBox from '../components/SearchBox.astro';
+import CategoryCard from '../components/CategoryCard.astro';
+import ProductCard from '../components/ProductCard.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { marca } from '../lib/site';
+import { categories, featured, solutions, products } from '../lib/catalog';
+import { faqHome } from '../data/faq';
+import { faqLd, defaultDescription } from '../lib/seo';
+import { mensagens, waLink } from '../lib/whatsapp';
+import inst from '../data/institucional.json';
+
+const diferenciais = [
+  { icon: 'building', t: 'Atendimento especializado ao setor público', d: 'Comunicação adequada à rotina de secretarias, hospitais, fundos de saúde e setores de compras.' },
+  { icon: 'grid', t: 'Catálogo organizado de equipamentos', d: 'Produtos agrupados por categoria, ambiente de uso e código RENEM, com busca por nome ou código.' },
+  { icon: 'clipboard', t: 'Consulta de possibilidades por atas', d: 'Levantamento de atas vigentes relacionadas ao item procurado, sujeito à confirmação de vigência, saldo e condições.' },
+  { icon: 'doc', t: 'Suporte comercial e documentação técnica', d: 'Encaminhamento de fichas técnicas, manuais e documentação disponibilizados pelo fornecedor.' },
+  { icon: 'list', t: 'Portfólio de soluções hospitalares', d: 'Mobiliário, transporte de pacientes, urgência, atenção básica, maternidade e lavanderia.' },
+  { icon: 'users', t: 'Atendimento personalizado', d: 'Retorno organizado por item para listas completas de equipamentos e projetos de estruturação.' },
+];
+const passos = [
+  'O órgão identifica os equipamentos necessários.',
+  'Nossa equipe apresenta produtos e possibilidades de fornecimento.',
+  'São disponibilizadas informações comerciais e documentação pertinente.',
+  'O órgão público avalia a viabilidade técnica, econômica e jurídica.',
+  'Quando aprovada a contratação, o fornecedor realiza o fornecimento conforme as condições formalizadas.',
+];
+const temAutoridade = [inst.certificacoes, inst.fabricantesRepresentados, inst.parceirosAutorizados, inst.casosVerificaveis, inst.fotosAutorizadas].some((l) => l.length > 0);
+const sugestoes = ['Cama Fowler', 'Monitor multiparamétrico', 'DEA', 'Carro maca', 'Mesa ginecológica'];
+---
+<BaseLayout title={marca.slogan} description={defaultDescription} jsonLd={[faqLd(faqHome)]}>
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container hero__inner">
+      <div class="hero__text">
+        <span class="hero__eyebrow">Mobiliário e equipamentos hospitalares</span>
+        <h1 id="hero-title">{marca.slogan}</h1>
+        <p class="hero__sub">Encontre mobiliário e equipamentos médico-hospitalares para prefeituras, secretarias, hospitais e unidades públicas de saúde. Consulte possibilidades de fornecimento por Atas de Registro de Preços.</p>
+        <div class="btn-row">
+          <a href="/atas/" class="btn btn--light" data-track="ata_request_click" data-track-location="hero">Consultar atas disponíveis</a>
+          <a href="/produtos/" class="btn btn--ghost-light">Explorar catálogo de produtos</a>
+        </div>
+      </div>
+      <figure class="hero__media">
+        <img src="/images/hero-ilustracao.svg" alt="Ilustração esquemática de quarto hospitalar com cama, suporte de soro e monitor" width="560" height="400" fetchpriority="high" />
+        <figcaption>Imagem ilustrativa</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- PESQUISA -->
+  <section class="home-search" aria-labelledby="busca-title">
+    <div class="container">
+      <div class="home-search__box card">
+        <h2 id="busca-title" class="home-search__title">O que sua unidade de saúde precisa adquirir?</h2>
+        <SearchBox id="busca-home" size="lg" placeholder="Equipamento, categoria ou código RENEM" label="O que sua unidade de saúde precisa adquirir?" location="home" />
+        <p class="home-search__hint">
+          <span>Exemplos:</span>
+          {sugestoes.map((s) => <a href={`/produtos/?q=${encodeURIComponent(s)}`}>{s}</a>)}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIAS -->
+  <section class="section" aria-labelledby="cat-title">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Categorias</span>
+          <h2 id="cat-title">Encontre equipamentos por categoria</h2>
+        </div>
+        <a href="/categorias/" class="btn btn--outline btn--sm">Todas as categorias <Icon name="arrow" size={18} /></a>
+      </div>
+      <div class="grid grid--4">
+        {categories.map((c) => <CategoryCard href={`/categorias/${c.slug}/`} nome={c.nome} ilustracao={c.ilustracao} count={c.count} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- DIFERENCIAIS -->
+  <section class="section section--sky" aria-labelledby="dif-title">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Como atendemos</span>
+          <h2 id="dif-title">Informação organizada para decisões de compra pública</h2>
+        </div>
+      </div>
+      <ul class="grid grid--3 features">
+        {diferenciais.map((d) => (
+          <li class="feature card">
+            <span class="feature__icon"><Icon name={d.icon} size={24} /></span>
+            <h3>{d.t}</h3>
+            <p>{d.d}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- DESTAQUES -->
+  {featured.length > 0 && (
+    <section class="section section--gray" aria-labelledby="dest-title">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Catálogo</span>
+            <h2 id="dest-title">Produtos em destaque</h2>
+            <p>{products.length} produtos publicados no catálogo. Especificações e disponibilidade sob consulta.</p>
+          </div>
+          <a href="/produtos/" class="btn btn--sm">Ver todos os produtos <Icon name="arrow" size={18} /></a>
+        </div>
+        <div class="grid grid--products">
+          {featured.map((p) => <ProductCard product={p} listName="destaques-home" />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- SOLUÇÕES -->
+  <section class="section" aria-labelledby="sol-title">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Soluções</span>
+          <h2 id="sol-title">Soluções por unidade de saúde</h2>
+          <p>Categorias e produtos agrupados pelos ambientes em que costumam ser utilizados. O dimensionamento final cabe aos profissionais responsáveis por cada projeto.</p>
+        </div>
+      </div>
+      <ul class="sol-grid">
+        {solutions.map((s) => (
+          <li>
+            <a href={`/solucoes/${s.slug}/`} class="sol-card">
+              <img src={`/images/ilustracoes/${s.ilustracao}.svg`} alt="" width="96" height="64" loading="lazy" />
+              <span><strong>{s.nome}</strong><small>{s.resumo}</small></span>
+              <Icon name="chevron" size={20} />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="section section--navy" aria-labelledby="como-title">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow eyebrow--light">Aquisição pública</span>
+          <h2 id="como-title">Como funciona a aquisição</h2>
+          <p class="on-dark">Nossa atuação é comercial e informativa. As decisões sobre a contratação são sempre do órgão público.</p>
+        </div>
+        <a href="/como-comprar/" class="btn btn--light btn--sm">Entenda como funciona a adesão a atas <Icon name="arrow" size={18} /></a>
+      </div>
+      <ol class="steps">
+        {passos.map((p, i) => <li><span class="steps__n" aria-hidden="true">{i + 1}</span><p>{p}</p></li>)}
+      </ol>
+    </div>
+  </section>
+
+  <!-- AUTORIDADE (só com dados comprovados) -->
+  {temAutoridade && (
+    <section class="section" aria-labelledby="aut-title">
+      <div class="container">
+        <h2 id="aut-title">Credenciais e parceiros</h2>
+        {inst.fabricantesRepresentados.length > 0 && <><h3>Fabricantes representados</h3><ul>{inst.fabricantesRepresentados.map((f: string) => <li>{f}</li>)}</ul></>}
+        {inst.parceirosAutorizados.length > 0 && <><h3>Parceiros autorizados</h3><ul>{inst.parceirosAutorizados.map((f: string) => <li>{f}</li>)}</ul></>}
+        {inst.certificacoes.length > 0 && <><h3>Certificações</h3><ul>{inst.certificacoes.map((f: string) => <li>{f}</li>)}</ul></>}
+        {inst.casosVerificaveis.length > 0 && <><h3>Fornecimentos verificáveis</h3><ul>{inst.casosVerificaveis.map((f: string) => <li>{f}</li>)}</ul></>}
+      </div>
+    </section>
+  )}
+
+  <!-- FAQ -->
+  <section class="section section--gray" aria-labelledby="faq-title">
+    <div class="container faq-wrap">
+      <div>
+        <span class="eyebrow">Dúvidas</span>
+        <h2 id="faq-title">Perguntas frequentes</h2>
+        <p class="muted">Respostas informativas, que não substituem a orientação jurídica do órgão público.</p>
+        <a href={waLink(mensagens.geral())} class="btn btn--outline btn--sm" target="_blank" rel="noopener" data-track="whatsapp_click" data-track-location="faq-home">Enviar outra pergunta</a>
+      </div>
+      <Faq items={faqHome} />
+    </div>
+  </section>
+
+  <CtaBand
+    title="Sua unidade de saúde precisa de novos equipamentos?"
+    text="Converse com nossa equipe para identificar produtos, especificações e possibilidades de fornecimento."
+    message={mensagens.geral()}
+    location="home-final"
+    secondary={{ href: '/contato/', label: 'Outras formas de contato' }}
+  />
+</BaseLayout>
+
+<style>
+  .hero { background: var(--c-navy); color: #d7e5ee; padding-block: var(--sp-10) var(--sp-16); }
+  .hero__inner { display: grid; gap: var(--sp-8); align-items: center; }
+  @media (min-width: 900px) { .hero__inner { grid-template-columns: 1.1fr .9fr; gap: var(--sp-12); } .hero { padding-block: var(--sp-16) 6.5rem; } }
+  .hero__eyebrow { display: inline-block; font-size: var(--fs-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #8fd3db; margin-bottom: var(--sp-3); }
+  .hero h1 { color: #fff; font-size: clamp(2rem, 1.4rem + 2.6vw, 3.25rem); margin-bottom: var(--sp-4); }
+  .hero__sub { font-size: var(--fs-md); max-width: 58ch; margin-bottom: var(--sp-6); color: #d7e5ee; }
+  .hero__media { margin: 0; position: relative; }
+  .hero__media img { width: 100%; border-radius: var(--radius-lg); }
+  .hero__media figcaption { position: absolute; right: 10px; bottom: 8px; font-size: 11px; color: var(--c-gray-500); background: rgba(255,255,255,.85); padding: 1px 6px; border-radius: 4px; }
+  @media (max-width: 899px) { .hero__media { max-width: 460px; } }
+  @media (max-width: 599px) { .hero__media { display: none; } .hero .btn { width: 100%; } }
+
+  .home-search { margin-top: calc(-1 * var(--sp-12)); position: relative; z-index: 5; }
+  .home-search__box { padding: var(--sp-5); box-shadow: var(--shadow); }
+  @media (min-width: 768px) { .home-search__box { padding: var(--sp-6) var(--sp-8); } }
+  .home-search__title { font-size: var(--fs-lg); margin-bottom: var(--sp-4); }
+  .home-search__hint { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: var(--sp-3) 0 0; font-size: var(--fs-sm); color: var(--c-gray-500); }
+  .home-search__hint a { color: var(--c-teal-dark); }
+
+  .features { list-style: none; margin: 0; padding: 0; }
+  @media (min-width: 900px) { .features { grid-template-columns: repeat(3, 1fr); } }
+  .feature { padding: var(--sp-6); }
+  .feature h3 { margin-top: var(--sp-4); }
+  .feature p { margin: 0; font-size: var(--fs-sm); color: var(--c-gray-500); }
+  .feature__icon { display: inline-grid; place-items: center; width: 48px; height: 48px; border-radius: 12px; background: var(--c-teal-soft); color: var(--c-teal-dark); }
+
+  .sol-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-3); grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); }
+  .sol-card { display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-3) var(--sp-4); background: #fff; border: 1px solid var(--c-gray-200); border-radius: var(--radius); text-decoration: none; color: var(--c-text); height: 100%; }
+  .sol-card:hover { border-color: var(--c-teal); box-shadow: var(--shadow); color: var(--c-text); }
+  .sol-card img { width: 80px; flex: none; background: var(--c-sky); border-radius: 8px; }
+  .sol-card strong { display: block; color: var(--c-navy); }
+  .sol-card small { display: block; font-size: var(--fs-sm); color: var(--c-gray-500); }
+  .sol-card :global(svg) { margin-left: auto; flex: none; color: var(--c-teal-dark); }
+
+  .eyebrow--light { color: #8fd3db; }
+  .on-dark { color: #c9d8e3 !important; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); counter-reset: s; }
+  .steps li { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); border-radius: var(--radius); padding: var(--sp-5); }
+  .steps p { margin: var(--sp-3) 0 0; color: #e6eef4; }
+  .steps__n { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--c-teal); color: #fff; font-weight: 700; }
+
+  .faq-wrap { display: grid; gap: var(--sp-8); }
+  @media (min-width: 900px) { .faq-wrap { grid-template-columns: .8fr 1.6fr; align-items: start; } }
+</style>
