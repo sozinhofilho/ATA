@@ -39,7 +39,8 @@ function pncpUnits_(plan) {
   var units = [];
   var ufs = plan.ufs.length ? plan.ufs : [''];
   if (plan.includeProposta) {
-    ufs.forEach(function (uf) { units.push({ type: 'prop', dataFinal: plan.to, uf: uf }); });
+    // dataFinal = limite do prazo de encerramento; 12 meses à frente cobre todas as propostas abertas.
+    ufs.forEach(function (uf) { units.push({ type: 'prop', dataFinal: plan.propTo || plan.to, uf: uf }); });
   }
   var d = parseYmd_(plan.from), end = parseYmd_(plan.to);
   while (d.getTime() <= end.getTime()) {

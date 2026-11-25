@@ -235,8 +235,9 @@ var DEFAULT_CATALOG = [
   ['Cardiologia e emergência', 'Desfibrilador', 'cardioversor; desfibrilador externo automatico; dea; desfibrilador cardioversor'],
   ['Cardiologia e emergência', 'Eletrocardiógrafo', 'aparelho de eletrocardiograma; eletrocardiografo digital; ecg de 12 canais'],
   ['Aspiração', 'Aspirador de secreções', 'aspirador de secrecao; aspirador de secrecoes; aspirador cirurgico; aspirador de secrecao portatil'],
-  ['Diagnóstico', 'Equipamentos de diagnóstico', 'esfigmomanometro; estetoscopio; otoscopio; oftalmoscopio; laringoscopio; detector fetal; sonar doppler; doppler fetal; nebulizador; cardiotocografo; colposcopio; ultrassonografo; aparelho de ultrassom; reanimador manual; ambu'],
+  ['Diagnóstico', 'Equipamentos de diagnóstico', 'esfigmomanometro; aparelho de pressao arterial; estetoscopio; otoscopio; oftalmoscopio; laringoscopio; detector fetal; sonar doppler; doppler fetal; nebulizador; cardiotocografo; colposcopio; ultrassonografo; aparelho de ultrassom; reanimador manual; ambu'],
   ['Emergência e neonatal', 'Incubadora neonatal', 'incubadora de transporte; incubadora para recem nascido; incubadora para rn; incubadora infantil; fototerapia; aparelho de fototerapia; berco aquecido'],
+  ['Equipamentos para UBS', 'Câmara de conservação de vacinas', 'camara de conservacao de vacinas; camara para conservacao de vacinas; camara fria para vacinas; refrigerador para vacinas; camara de vacinas; caixa termica para vacinas'],
   ['Centro cirúrgico e esterilização', 'Autoclave', 'autoclave hospitalar; mesa cirurgica; bisturi eletrico; eletrocauterio'],
   ['Lavanderia hospitalar', 'Lavadora hospitalar', 'lavadora extratora; lavadora de barreira; lavadora hospitalar de roupas; secadora hospitalar; secadora rotativa; centrifuga de roupas; calandra'],
   ['Genérico hospitalar', 'Mobiliário/equipamento hospitalar (genérico)', 'mobiliario hospitalar; moveis hospitalares; equipamento hospitalar; equipamentos hospitalares; equipamento medico hospitalar; equipamentos medico hospitalares; equipamento medico assistencial; equipamentos medicos; material permanente hospitalar; mobiliario clinico; equipamentos para ubs; equipamentos para upa']
@@ -366,11 +367,16 @@ var EXCLUDE_RE_ = new RegExp([
 ].join('|'));
 
 // Indica serviço sobre o bem (não aquisição): reduz prioridade.
-var SERVICE_RE_ = /(manutencao|locacao|aluguel|conserto|reparo|calibracao|assistencia tecnica|comodato|prestacao de servico)/;
-var ACQUIRE_RE_ = /(aquisicao|compra|fornecimento|registro de precos|aquisicoes)/;
+var SERVICE_RE_ = /(manuten|locacao|aluguel|conserto|reparo|calibra|assistencia tecnica|comodato|prestacao de servico|servicos tecnicos|contratacao de empresa para (?:prestacao|execucao))/;
+var ACQUIRE_RE_ = /(aquisicao|aquisicoes|compra de|fornecimento de (?:equipamento|mobiliario|moveis|bens))/;
+// Peças, insumos e reposição (não é equipamento novo).
+var PARTS_RE_ = /(pecas|insumos|acessorios|reposicao|material de consumo)/;
+var NEW_EQUIP_RE_ = /(aquisicao|aquisicoes|compra|fornecimento)(?: (?:parcelada|futura|futuras|eventual|eventuais|e|de|do|da|dos|das|para|novos|novas))* (?:equipamento|mobiliario|moveis|materiais permanentes|material permanente|bens permanentes)/;
+// Fora do escopo mesmo que algum item coincida (uso veterinário, brinquedos/escolar).
+var HARD_EXCLUDE_RE_ = /(veterinari|uso animal|ambulatorio animal|clinica veterinaria|brinquedo|jogos pedagogicos|ludic)/;
 
 // Contexto de saúde (objeto ou nome do órgão/unidade).
-var HEALTH_RE_ = /(saude|hospital|ubs|upa|unidade basica|posto de saude|pronto atendimento|pronto socorro|policlinica|caps|samu|maternidade|clinica|ambulatori|fms|fundo municipal de saude|centro de especialidades|esf|estrategia saude da familia)/;
+var HEALTH_RE_ = /(?:^|\s)(saude|hospital\w*|ubs|upa|unidades? basicas? de saude|posto de saude|pronto atendimento|pronto socorro|policlinica|caps|samu|maternidade|clinicas?|ambulatori\w*|fms|centro de especialidades|esf)(?=\s|$)/;
 // Contexto de equipamento permanente.
 var EQUIP_RE_ = /(equipamento|mobiliario|moveis|material permanente|materiais permanentes|bens permanentes|aparelho|mobilia)/;
 var STRUCT_RE_ = /(estruturacao|implantacao|ampliacao|aparelhamento|equipar|equipagem)/;
@@ -383,13 +389,15 @@ function preClassify(matcher, objeto, orgaoTexto) {
   var o = normalizeText(objeto);
   var org = normalizeText(orgaoTexto);
   var hits = matchProducts(matcher, objeto);
+  if (HARD_EXCLUDE_RE_.test(o)) return { hits: [], contextual: false, excluded: true, service: false };
   var service = SERVICE_RE_.test(o) && !ACQUIRE_RE_.test(o);
+  var parts = PARTS_RE_.test(o) && !NEW_EQUIP_RE_.test(o);
   var excluded = EXCLUDE_RE_.test(o);
   var health = HEALTH_RE_.test(o) || HEALTH_RE_.test(org);
   var contextual = !hits.length && health && (EQUIP_RE_.test(o) || (STRUCT_RE_.test(o) && ACQUIRE_RE_.test(o)));
   // Processo misto (ex.: medicamentos + equipamentos): mantém se houver equipamento no objeto.
   if (excluded && EQUIP_RE_.test(o)) excluded = false;
-  return { hits: hits, contextual: contextual && !excluded, excluded: excluded && !hits.length, service: service };
+  return { hits: hits, contextual: contextual && !excluded, excluded: excluded && !hits.length, service: service, parts: parts };
 }
 
 /** Situação interpretada a partir dos dados oficiais do PNCP. */
@@ -446,6 +454,9 @@ function classifyOpportunity(pre, itemHits, status, publishedAt, now) {
   if (pre.service) {
     prio = 'Baixa';
     motivo = 'Objeto indica serviço (manutenção/locação), não aquisição';
+  } else if (pre.parts) {
+    prio = 'Baixa';
+    motivo = 'Objeto indica peças/insumos/reposição, não equipamento novo';
   } else if (closed) {
     prio = 'Baixa';
     motivo = 'Processo encerrado (' + status.toLowerCase() + ')';
@@ -524,7 +535,8 @@ function pncpUnits_(plan) {
   var units = [];
   var ufs = plan.ufs.length ? plan.ufs : [''];
   if (plan.includeProposta) {
-    ufs.forEach(function (uf) { units.push({ type: 'prop', dataFinal: plan.to, uf: uf }); });
+    // dataFinal = limite do prazo de encerramento; 12 meses à frente cobre todas as propostas abertas.
+    ufs.forEach(function (uf) { units.push({ type: 'prop', dataFinal: plan.propTo || plan.to, uf: uf }); });
   }
   var d = parseYmd_(plan.from), end = parseYmd_(plan.to);
   while (d.getTime() <= end.getTime()) {
@@ -984,7 +996,7 @@ function opportunityCardHtml_(r, n) {
     line('Valor divulgado', val ? 'R$ ' + formatBRL_(val) : 'não divulgado') +
     line('Situação', r[C['Situação interpretada']] + (r[C['Prazo para propostas']] ? ' — propostas até ' + fmtDate_(r[C['Prazo para propostas']], true) : '')) +
     line('Motivo', r[C['Motivo da classificação']]) +
-    (link ? '<div><b>Fonte oficial:</b> <a href="' + esc_(link) + '">' + esc_(link) + '</a></div>' : '') +
+    (link ? '<div style="margin-top:4px"><b>Fonte oficial:</b> <a href="' + esc_(link) + '">Abrir no PNCP</a></div>' : '') +
     '</div>';
 }
 
@@ -1227,7 +1239,7 @@ function startRun_(opts) {
       trigger: opts.trigger,
       email: !!opts.email,
       mode: initial ? 'inicial' : 'diária',
-      plan: { from: ymd_(from), to: ymd_(today), mods: cfg.modalidades, ufs: cfg.ufs, includeProposta: initial },
+      plan: { from: ymd_(from), to: ymd_(today), propTo: ymd_(addDays_(today, 365)), mods: cfg.modalidades, ufs: cfg.ufs, includeProposta: initial },
       unitIdx: 0, page: 1, totalPages: null,
       phase: 'collect',
       stats: { paginas: 0, paginasFalha: 0, registros: 0, candidatos: 0, novos: 0, atualizados: 0, itens: 0, itensFalha: 0, verificados: 0, verificacaoFalha: 0 },
@@ -1480,7 +1492,7 @@ function testSources() {
   var y = ymd_(addDays_(new Date(), -1));
   var pub = httpGetJson_(NR.PNCP_CONSULTA + '/v1/contratacoes/publicacao?' + qs_({ dataInicial: y, dataFinal: y, codigoModalidadeContratacao: 6, pagina: 1, tamanhoPagina: 10 }));
   out.push(['PNCP publicações', pub.ok ? 'OK (' + (pub.data ? pub.data.totalRegistros : 0) + ' registros ontem, pregão eletrônico)' : pub.error]);
-  var prop = httpGetJson_(NR.PNCP_CONSULTA + '/v1/contratacoes/proposta?' + qs_({ dataFinal: ymd_(new Date()), pagina: 1, tamanhoPagina: 10 }));
+  var prop = httpGetJson_(NR.PNCP_CONSULTA + '/v1/contratacoes/proposta?' + qs_({ dataFinal: ymd_(addDays_(new Date(), 365)), pagina: 1, tamanhoPagina: 10 }));
   out.push(['PNCP propostas abertas', prop.ok ? 'OK (' + (prop.data ? prop.data.totalRegistros : 0) + ' abertas no Brasil)' : prop.error]);
   var first = pub.ok && pub.data && pub.data.data && pub.data.data[0];
   if (first) {

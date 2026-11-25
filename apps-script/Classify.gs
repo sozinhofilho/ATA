@@ -16,11 +16,16 @@ var EXCLUDE_RE_ = new RegExp([
 ].join('|'));
 
 // Indica serviço sobre o bem (não aquisição): reduz prioridade.
-var SERVICE_RE_ = /(manutencao|locacao|aluguel|conserto|reparo|calibracao|assistencia tecnica|comodato|prestacao de servico)/;
-var ACQUIRE_RE_ = /(aquisicao|compra|fornecimento|registro de precos|aquisicoes)/;
+var SERVICE_RE_ = /(manuten|locacao|aluguel|conserto|reparo|calibra|assistencia tecnica|comodato|prestacao de servico|servicos tecnicos|contratacao de empresa para (?:prestacao|execucao))/;
+var ACQUIRE_RE_ = /(aquisicao|aquisicoes|compra de|fornecimento de (?:equipamento|mobiliario|moveis|bens))/;
+// Peças, insumos e reposição (não é equipamento novo).
+var PARTS_RE_ = /(pecas|insumos|acessorios|reposicao|material de consumo)/;
+var NEW_EQUIP_RE_ = /(aquisicao|aquisicoes|compra|fornecimento)(?: (?:parcelada|futura|futuras|eventual|eventuais|e|de|do|da|dos|das|para|novos|novas))* (?:equipamento|mobiliario|moveis|materiais permanentes|material permanente|bens permanentes)/;
+// Fora do escopo mesmo que algum item coincida (uso veterinário, brinquedos/escolar).
+var HARD_EXCLUDE_RE_ = /(veterinari|uso animal|ambulatorio animal|clinica veterinaria|brinquedo|jogos pedagogicos|ludic)/;
 
 // Contexto de saúde (objeto ou nome do órgão/unidade).
-var HEALTH_RE_ = /(saude|hospital|ubs|upa|unidade basica|posto de saude|pronto atendimento|pronto socorro|policlinica|caps|samu|maternidade|clinica|ambulatori|fms|fundo municipal de saude|centro de especialidades|esf|estrategia saude da familia)/;
+var HEALTH_RE_ = /(?:^|\s)(saude|hospital\w*|ubs|upa|unidades? basicas? de saude|posto de saude|pronto atendimento|pronto socorro|policlinica|caps|samu|maternidade|clinicas?|ambulatori\w*|fms|centro de especialidades|esf)(?=\s|$)/;
 // Contexto de equipamento permanente.
 var EQUIP_RE_ = /(equipamento|mobiliario|moveis|material permanente|materiais permanentes|bens permanentes|aparelho|mobilia)/;
 var STRUCT_RE_ = /(estruturacao|implantacao|ampliacao|aparelhamento|equipar|equipagem)/;
@@ -33,13 +38,15 @@ function preClassify(matcher, objeto, orgaoTexto) {
   var o = normalizeText(objeto);
   var org = normalizeText(orgaoTexto);
   var hits = matchProducts(matcher, objeto);
+  if (HARD_EXCLUDE_RE_.test(o)) return { hits: [], contextual: false, excluded: true, service: false };
   var service = SERVICE_RE_.test(o) && !ACQUIRE_RE_.test(o);
+  var parts = PARTS_RE_.test(o) && !NEW_EQUIP_RE_.test(o);
   var excluded = EXCLUDE_RE_.test(o);
   var health = HEALTH_RE_.test(o) || HEALTH_RE_.test(org);
   var contextual = !hits.length && health && (EQUIP_RE_.test(o) || (STRUCT_RE_.test(o) && ACQUIRE_RE_.test(o)));
   // Processo misto (ex.: medicamentos + equipamentos): mantém se houver equipamento no objeto.
   if (excluded && EQUIP_RE_.test(o)) excluded = false;
-  return { hits: hits, contextual: contextual && !excluded, excluded: excluded && !hits.length, service: service };
+  return { hits: hits, contextual: contextual && !excluded, excluded: excluded && !hits.length, service: service, parts: parts };
 }
 
 /** Situação interpretada a partir dos dados oficiais do PNCP. */
@@ -96,6 +103,9 @@ function classifyOpportunity(pre, itemHits, status, publishedAt, now) {
   if (pre.service) {
     prio = 'Baixa';
     motivo = 'Objeto indica serviço (manutenção/locação), não aquisição';
+  } else if (pre.parts) {
+    prio = 'Baixa';
+    motivo = 'Objeto indica peças/insumos/reposição, não equipamento novo';
   } else if (closed) {
     prio = 'Baixa';
     motivo = 'Processo encerrado (' + status.toLowerCase() + ')';

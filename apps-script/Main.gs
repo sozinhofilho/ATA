@@ -145,7 +145,7 @@ function startRun_(opts) {
       trigger: opts.trigger,
       email: !!opts.email,
       mode: initial ? 'inicial' : 'diária',
-      plan: { from: ymd_(from), to: ymd_(today), mods: cfg.modalidades, ufs: cfg.ufs, includeProposta: initial },
+      plan: { from: ymd_(from), to: ymd_(today), propTo: ymd_(addDays_(today, 365)), mods: cfg.modalidades, ufs: cfg.ufs, includeProposta: initial },
       unitIdx: 0, page: 1, totalPages: null,
       phase: 'collect',
       stats: { paginas: 0, paginasFalha: 0, registros: 0, candidatos: 0, novos: 0, atualizados: 0, itens: 0, itensFalha: 0, verificados: 0, verificacaoFalha: 0 },
@@ -398,7 +398,7 @@ function testSources() {
   var y = ymd_(addDays_(new Date(), -1));
   var pub = httpGetJson_(NR.PNCP_CONSULTA + '/v1/contratacoes/publicacao?' + qs_({ dataInicial: y, dataFinal: y, codigoModalidadeContratacao: 6, pagina: 1, tamanhoPagina: 10 }));
   out.push(['PNCP publicações', pub.ok ? 'OK (' + (pub.data ? pub.data.totalRegistros : 0) + ' registros ontem, pregão eletrônico)' : pub.error]);
-  var prop = httpGetJson_(NR.PNCP_CONSULTA + '/v1/contratacoes/proposta?' + qs_({ dataFinal: ymd_(new Date()), pagina: 1, tamanhoPagina: 10 }));
+  var prop = httpGetJson_(NR.PNCP_CONSULTA + '/v1/contratacoes/proposta?' + qs_({ dataFinal: ymd_(addDays_(new Date(), 365)), pagina: 1, tamanhoPagina: 10 }));
   out.push(['PNCP propostas abertas', prop.ok ? 'OK (' + (prop.data ? prop.data.totalRegistros : 0) + ' abertas no Brasil)' : prop.error]);
   var first = pub.ok && pub.data && pub.data.data && pub.data.data[0];
   if (first) {

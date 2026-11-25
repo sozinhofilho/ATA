@@ -71,7 +71,7 @@ function opportunityCardHtml_(r, n) {
     line('Valor divulgado', val ? 'R$ ' + formatBRL_(val) : 'não divulgado') +
     line('Situação', r[C['Situação interpretada']] + (r[C['Prazo para propostas']] ? ' — propostas até ' + fmtDate_(r[C['Prazo para propostas']], true) : '')) +
     line('Motivo', r[C['Motivo da classificação']]) +
-    (link ? '<div><b>Fonte oficial:</b> <a href="' + esc_(link) + '">' + esc_(link) + '</a></div>' : '') +
+    (link ? '<div style="margin-top:4px"><b>Fonte oficial:</b> <a href="' + esc_(link) + '">Abrir no PNCP</a></div>' : '') +
     '</div>';
 }
 

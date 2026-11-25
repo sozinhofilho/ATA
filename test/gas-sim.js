@@ -104,7 +104,7 @@ const ctx = {
   UrlFetchApp, Utilities,
   SpreadsheetApp: {
     getActiveSpreadsheet: () => ssProxy, openById: () => ssProxy, flush: () => {},
-    create: () => ssProxy, getUi: () => { throw new Error('sem UI'); },
+    create: () => new Proxy({ getSheets: () => [noop], insertSheet: () => noop, getId: () => 'TMP' }, { get: (t, p) => t[p] || noop }), getUi: () => { throw new Error('sem UI'); },
     newRichTextValue: () => { const b = { text: '', setText(t) { b.text = t; return b; }, setLinkUrl() { return b; }, build() { return { text: b.text }; } }; return b; },
     newConditionalFormatRule: () => noop,
   },
