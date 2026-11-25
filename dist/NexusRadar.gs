@@ -62,7 +62,7 @@ var CFG_DEFAULTS = [
   ['Monitorar oportunidades abertas', 'SIM', 'Reconsulta diariamente a situação das oportunidades em aberto.'],
   ['Dias de acompanhamento após prazo', 60, 'Por quantos dias após o prazo de propostas a situação continua sendo verificada.'],
   ['Buscar itens das contratações', 'SIM', 'Consulta os itens para identificar produtos e quantidades.'],
-  ['Requisições simultâneas', 4, 'Paralelismo das chamadas ao PNCP (1 a 8). Reduza se aparecer erro 429.'],
+  ['Requisições simultâneas', 6, 'Paralelismo das chamadas ao PNCP (1 a 8). Reduza se aparecer erro 429.'],
   ['Máximo de oportunidades no e-mail', 10, 'Quantas oportunidades detalhar no corpo do e-mail.']
 ];
 

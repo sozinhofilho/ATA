@@ -74,7 +74,7 @@ A partir daí, todo dia: a coleta começa entre 6h e 7h e o e-mail chega ao fina
 | Modalidades | Linha "Modalidades PNCP" (padrão 4,5,6,7,8). |
 | Horário | Linha "Hora do relatório" e depois menu **Ativar automação diária** de novo. |
 | Excel / e-mail | "Exportação em Excel" e "Envio de e-mail diário": SIM ou NÃO. |
-| Velocidade | "Requisições simultâneas" (padrão 4). Se aparecer erro 429 nos LOGS, reduza para 2 ou 3. |
+| Velocidade | "Requisições simultâneas" (padrão 6). Se aparecer erro 429 nos LOGS, reduza para 2 ou 3. |
 
 ## 4. Produtos
 
