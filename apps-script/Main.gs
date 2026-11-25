@@ -118,7 +118,12 @@ function runDailyScan() { startRun_({ email: true, trigger: 'manual' }); }
 /** Acionador diário. */
 function startDailyScan() {
   var st = getState_();
-  if (st && st.phase !== 'done' && Date.now() - st.startedAt < 3 * 3600 * 1000) return continueScan();
+  var age = st ? Date.now() - st.startedAt : 0;
+  // Execução em andamento: continua (a carga inicial pode atravessar a cota diária e seguir no dia seguinte).
+  if (st && st.phase !== 'done' && (age < 3 * 3600 * 1000 || (st.mode === 'inicial' && age < 4 * 86400000))) {
+    st.email = getConfig().emailOn; st.trigger = 'agendado'; saveState_(st);
+    return continueScan();
+  }
   startRun_({ email: getConfig().emailOn, trigger: 'agendado' });
 }
 
@@ -139,6 +144,12 @@ function startRun_(opts) {
     var lastTo = props.getProperty('LAST_COLLECT_TO');
     var initial = !lastTo;
     var from = addDays_(today, -(initial ? cfg.initialDays : cfg.windowDays));
+    if (!initial) {
+      // Cobre lacunas (dias sem coleta completa), limitado a 30 dias.
+      var gapFrom = addDays_(parseYmd_(lastTo), -1);
+      var floor = addDays_(today, -30);
+      if (gapFrom.getTime() < from.getTime()) from = gapFrom.getTime() < floor.getTime() ? floor : gapFrom;
+    }
     var st = {
       id: Utilities.formatDate(today, NR.TZ, 'yyyyMMdd-HHmmss'),
       startedAt: Date.now(),

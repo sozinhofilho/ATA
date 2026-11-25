@@ -57,8 +57,8 @@ var CFG_DEFAULTS = [
   ['Hora do relatório', 7, 'Hora aproximada (0-23) do e-mail. A coleta começa 1 hora antes. Rode installTriggers() após mudar.'],
   ['Estados (UF)', '', 'Vazio = Brasil inteiro. Ou siglas separadas por vírgula, ex.: SC,PR,RS'],
   ['Modalidades PNCP', '4,5,6,7,8', '4 Concorrência eletrônica, 5 Concorrência presencial, 6 Pregão eletrônico, 7 Pregão presencial, 8 Dispensa, 9 Inexigibilidade, 12 Credenciamento'],
-  ['Período da pesquisa inicial (dias)', 30, 'Usado apenas na primeira coleta.'],
-  ['Janela de segurança (dias)', 7, 'Nas coletas diárias, reconsulta as publicações destes últimos dias.'],
+  ['Período da pesquisa inicial (dias)', 7, 'Primeira coleta: todas as licitações com propostas abertas no país + publicações destes últimos dias (máx. 30; valores altos podem levar mais de um dia).'],
+  ['Janela de segurança (dias)', 3, 'Nas coletas diárias, reconsulta as publicações destes últimos dias (e automaticamente qualquer intervalo desde a última coleta completa).'],
   ['Monitorar oportunidades abertas', 'SIM', 'Reconsulta diariamente a situação das oportunidades em aberto.'],
   ['Dias de acompanhamento após prazo', 60, 'Por quantos dias após o prazo de propostas a situação continua sendo verificada.'],
   ['Buscar itens das contratações', 'SIM', 'Consulta os itens para identificar produtos e quantidades.'],
@@ -96,7 +96,7 @@ function getConfig() {
     hour: num('Hora do relatório', 0, 23),
     ufs: list('Estados (UF)').map(function (u) { return u.toUpperCase(); }).filter(function (u) { return /^[A-Z]{2}$/.test(u); }),
     modalidades: list('Modalidades PNCP').map(Number).filter(function (n) { return n > 0 && n < 20; }),
-    initialDays: num('Período da pesquisa inicial (dias)', 1, 90),
+    initialDays: num('Período da pesquisa inicial (dias)', 1, 30),
     windowDays: num('Janela de segurança (dias)', 1, 30),
     monitorOpen: yes('Monitorar oportunidades abertas'),
     followDays: num('Dias de acompanhamento após prazo', 0, 365),
@@ -1216,7 +1216,12 @@ function runDailyScan() { startRun_({ email: true, trigger: 'manual' }); }
 /** Acionador diário. */
 function startDailyScan() {
   var st = getState_();
-  if (st && st.phase !== 'done' && Date.now() - st.startedAt < 3 * 3600 * 1000) return continueScan();
+  var age = st ? Date.now() - st.startedAt : 0;
+  // Execução em andamento: continua (a carga inicial pode atravessar a cota diária e seguir no dia seguinte).
+  if (st && st.phase !== 'done' && (age < 3 * 3600 * 1000 || (st.mode === 'inicial' && age < 4 * 86400000))) {
+    st.email = getConfig().emailOn; st.trigger = 'agendado'; saveState_(st);
+    return continueScan();
+  }
   startRun_({ email: getConfig().emailOn, trigger: 'agendado' });
 }
 
@@ -1237,6 +1242,12 @@ function startRun_(opts) {
     var lastTo = props.getProperty('LAST_COLLECT_TO');
     var initial = !lastTo;
     var from = addDays_(today, -(initial ? cfg.initialDays : cfg.windowDays));
+    if (!initial) {
+      // Cobre lacunas (dias sem coleta completa), limitado a 30 dias.
+      var gapFrom = addDays_(parseYmd_(lastTo), -1);
+      var floor = addDays_(today, -30);
+      if (gapFrom.getTime() < from.getTime()) from = gapFrom.getTime() < floor.getTime() ? floor : gapFrom;
+    }
     var st = {
       id: Utilities.formatDate(today, NR.TZ, 'yyyyMMdd-HHmmss'),
       startedAt: Date.now(),
