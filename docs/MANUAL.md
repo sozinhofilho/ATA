@@ -35,9 +35,9 @@ com o computador desligado.
      - *Enviar e-mail como você*: enviar o relatório **somente para você** (não lê sua caixa de entrada).
      - *Permitir que este aplicativo seja executado quando você não estiver presente*: o agendamento diário.
 7. Volte à planilha e recarregue a página (F5). Aparece o menu **Nexus Radar** e as 6 abas.
-8. Menu **Nexus Radar > Atualizar agora (sem e-mail)**. A primeira carga (Brasil inteiro, últimos 30 dias +
-   todas as licitações com propostas abertas) leva de 20 a 40 minutos: o sistema trabalha em blocos de
-   ~4,5 minutos e continua sozinho. Pode fechar a planilha. Acompanhe pela aba **LOGS**.
+8. Menu **Nexus Radar > Atualizar agora (sem e-mail)**. A primeira carga (Brasil inteiro: todas as licitações
+   com propostas abertas + publicações dos últimos 7 dias) leva cerca de 1 hora: o sistema trabalha em blocos
+   de ~4,5 minutos e continua sozinho a cada minuto. Pode fechar a planilha. Acompanhe pela aba **LOGS**.
 9. Menu **Nexus Radar > Enviar e-mail de teste**. Confira o e-mail e o Excel anexo.
 10. Menu **Nexus Radar > Ativar automação diária**. Pronto.
 
@@ -88,7 +88,7 @@ Se souber o código CATMAT, coloque em "Código CATMAT": itens com esse código 
 - **Atualizar agora (sem e-mail)**: coleta e atualiza a planilha.
 - **Varredura completa + e-mail**: coleta e envia o relatório (no máximo 1 por dia pelo agendamento).
 - **Ativar / Desativar automação diária**: liga/desliga os acionadores (sem duplicar).
-- **Refazer carga inicial**: repete a busca dos últimos 30 dias + propostas abertas (não apaga dados).
+- **Refazer carga inicial**: repete a busca de todas as propostas abertas + publicações recentes (não apaga dados).
 - **Testar fontes**: verifica se o PNCP está respondendo.
 
 ## 6. Chaves de API (futuro)

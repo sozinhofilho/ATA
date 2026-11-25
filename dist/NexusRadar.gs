@@ -370,7 +370,7 @@ var EXCLUDE_RE_ = new RegExp([
 var SERVICE_RE_ = /(manuten|locacao|aluguel|conserto|reparo|calibra|assistencia tecnica|comodato|prestacao de servico|servicos tecnicos|contratacao de empresa para (?:prestacao|execucao))/;
 var ACQUIRE_RE_ = /(aquisicao|aquisicoes|compra de|fornecimento de (?:equipamento|mobiliario|moveis|bens))/;
 // Peças, insumos e reposição (não é equipamento novo).
-var PARTS_RE_ = /(pecas|insumos|acessorios|reposicao|material de consumo)/;
+var PARTS_RE_ = /(pecas|insumos|acessorios|reposicao|material de consumo|baterias|refis)/;
 var NEW_EQUIP_RE_ = /(aquisicao|aquisicoes|compra|fornecimento)(?: (?:parcelada|futura|futuras|eventual|eventuais|e|de|do|da|dos|das|para|novos|novas))* (?:equipamento|mobiliario|moveis|materiais permanentes|material permanente|bens permanentes)/;
 // Fora do escopo mesmo que algum item coincida (uso veterinário, brinquedos/escolar).
 var HARD_EXCLUDE_RE_ = /(veterinari|uso animal|ambulatorio animal|clinica veterinaria|brinquedo|jogos pedagogicos|ludic)/;
