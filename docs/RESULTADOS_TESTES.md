@@ -62,3 +62,16 @@ Estas etapas só podem ser feitas na conta do proprietário, depois da autoriza�
 - envio real do e-mail;
 - exportação .xlsx pela API do Drive;
 - acionadores reais.
+
+## Pesquisa de 28/11/2026 com o catálogo RENEM completo (840 itens)
+
+- **Volume analisado:** 60.797 contratações. 2.257 candidatas tiveram os itens conferidos. Foram 4.136 requisições, sem nenhuma página com falha, em 13 blocos de execução (cerca de 47 minutos).
+- **Oportunidades encontradas:** 1.571. Destas, 1.167 estão com licitação aberta:
+  - 570 de prioridade alta;
+  - 285 de prioridade média;
+  - 312 de prioridade baixa.
+- **Mobiliário hospitalar:** 254 licitações abertas de prioridade alta incluem mobiliário hospitalar (cama, maca, poltrona, mesas, biombo, suporte de soro, mocho, carros, cadeira de rodas).
+- **Ajustes feitos depois desta execução:**
+  - itens gerais da RENEM (ar-condicionado, computador etc.) passaram a ter prioridade média;
+  - termos ambíguos ("telha trapézio") passaram a exigir contexto de saúde.
+- **Falso positivo conhecido:** Bento Gonçalves/RS, chamamento de vagas em creche que foi identificado como "Berço".
