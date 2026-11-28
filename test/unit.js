@@ -67,6 +67,12 @@ t('prioridade alta = produto + aberta + recente', () => {
   assert.strictEqual(ctx.classifyOpportunity(pre, null, 'Licitação em julgamento', new Date(), new Date()).prioridade, 'Média');
   assert.strictEqual(ctx.classifyOpportunity(pre, null, 'Revogada', new Date(), new Date()).prioridade, 'Baixa');
 });
+t('itens gerais da RENEM (ar-condicionado, computador) em compra da saúde = prioridade média', () => {
+  const pre = ctx.preClassify(m, 'Aquisição de ar condicionado e computadores para a UBS', 'MUNICIPIO DE X');
+  assert.ok(pre.hits.length >= 2);
+  assert.strictEqual(ctx.classifyOpportunity(pre, null, 'Licitação aberta', new Date(), new Date()).prioridade, 'Média');
+  assert.deepStrictEqual(ctx.preClassify(m, 'Aquisição de telha trapézio para serviços urbanos', 'MUNICIPIO DE X').hits, []);
+});
 t('situação interpretada (aberta, julgamento, concluída, cancelada, revogada, suspensa)', () => {
   const now = new Date(2026, 10, 25, 12);
   const f = (o) => ctx.interpretStatus(Object.assign({ situacaoId: 1, prazo: null, valorHomologado: null }, o), now);

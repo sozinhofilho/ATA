@@ -267,7 +267,7 @@ var RENEM_CATALOG = [
   ["RENEM-058", "Apoio", "Cilindro de CO2", "11252", "", "", "SIM"],
   ["RENEM-059", "Apoio", "Cilindro de Gases Medicinais", "782", "", "", "NÃO"],
   ["RENEM-060", "Apoio", "Coletor de Dados Hospitalar", "11946", "", "Coletor de Dados Hospitalar Móvel", "NÃO"],
-  ["RENEM-061", "Apoio", "Comadre", "1006", "", "", "NÃO"],
+  ["RENEM-061", "Apoio", "Comadre", "1006", "", "", "SIM"],
   ["RENEM-062", "Apoio", "Compressor Odontológico", "3119", "", "", "NÃO"],
   ["RENEM-063", "Apoio", "Compressora", "2149", "", "", "NÃO"],
   ["RENEM-064", "Apoio", "Condutivímetro", "2160", "", "", "NÃO"],
@@ -280,8 +280,8 @@ var RENEM_CATALOG = [
   ["RENEM-071", "Apoio", "Dessecador", "636", "", "", "NÃO"],
   ["RENEM-072", "Apoio", "Destilador de Água", "2339", "", "", "NÃO"],
   ["RENEM-073", "Apoio", "Desumidificador", "2303", "", "", "SIM"],
-  ["RENEM-074", "Apoio", "Diapasão", "910", "", "", "NÃO"],
-  ["RENEM-075", "Apoio", "Disco Flexor", "11894", "", "", "NÃO"],
+  ["RENEM-074", "Apoio", "Diapasão", "910", "", "", "SIM"],
+  ["RENEM-075", "Apoio", "Disco Flexor", "11894", "", "", "SIM"],
   ["RENEM-076", "Apoio", "Dispensador de Parafina", "10522", "", "", "NÃO"],
   ["RENEM-077", "Apoio", "Dispositivo Auxiliar de Marcha", "11837", "", "", "NÃO"],
   ["RENEM-078", "Apoio", "Elevador para Transposição de Leito", "10554", "", "", "NÃO"],
@@ -377,7 +377,7 @@ var RENEM_CATALOG = [
   ["RENEM-168", "Apoio", "Panela Elétrica para Confecção de Órteses", "11213", "", "", "NÃO"],
   ["RENEM-169", "Apoio", "Panela Elétrica Polimerizadora", "11822", "", "Panela Elétrica Polimerizadora Digital", "NÃO"],
   ["RENEM-170", "Apoio", "Panela Eliminadora de Bolhas", "11823", "", "", "NÃO"],
-  ["RENEM-171", "Apoio", "Papagaio", "496", "", "", "NÃO"],
+  ["RENEM-171", "Apoio", "Papagaio", "496", "", "", "SIM"],
   ["RENEM-172", "Apoio", "Passa Chassi Radiográfico", "569", "", "", "NÃO"],
   ["RENEM-173", "Apoio", "Pedômetro", "11962", "", "Pedômetro Digital", "NÃO"],
   ["RENEM-174", "Apoio", "Picnômetro com Tampa", "11786", "", "", "NÃO"],
@@ -444,7 +444,7 @@ var RENEM_CATALOG = [
   ["RENEM-235", "Apoio", "Termohigrobarômetro", "11855", "", "", "NÃO"],
   ["RENEM-236", "Apoio", "Termohigrômetro", "1339", "", "", "NÃO"],
   ["RENEM-237", "Apoio", "Torno Odontológico", "789", "", "", "NÃO"],
-  ["RENEM-238", "Apoio", "Trapézio", "11917", "", "", "NÃO"],
+  ["RENEM-238", "Apoio", "Trapézio", "11917", "", "", "SIM"],
   ["RENEM-239", "Apoio", "Triângulo", "11903", "", "", "SIM"],
   ["RENEM-240", "Apoio", "Turbidímetro", "11883", "", "", "NÃO"],
   ["RENEM-241", "Apoio", "Ultracongelador de Nitrogênio Líquido", "11254", "", "", "NÃO"],
@@ -482,9 +482,9 @@ var RENEM_CATALOG = [
   ["RENEM-273", "Gerais", "Câmera de Segurança", "11834", "", "", "SIM"],
   ["RENEM-274", "Gerais", "Câmera de Videoconferência", "11858", "", "", "SIM"],
   ["RENEM-275", "Gerais", "Carrinho de Mão", "1703", "", "", "SIM"],
-  ["RENEM-276", "Gerais", "Carro para", "11843", "", "Carro para Mecânico", "SIM"],
-  ["RENEM-277", "Gerais", "Carro para Ferramentas", "11842", "", "", "SIM"],
-  ["RENEM-278", "Gerais", "Carro para Material de Limpeza", "2306", "", "", "SIM"],
+  ["RENEM-276", "Gerais", "Carro para Ferramentas", "11842", "", "", "SIM"],
+  ["RENEM-277", "Gerais", "Carro para Material de Limpeza", "2306", "", "", "SIM"],
+  ["RENEM-278", "Gerais", "Carro para Mecânico", "11843", "", "", "SIM"],
   ["RENEM-279", "Gerais", "Carro para Transporte de Materiais", "2630", "", "", "SIM"],
   ["RENEM-280", "Gerais", "Carro para Transporte de Resíduos", "10350", "", "", "SIM"],
   ["RENEM-281", "Gerais", "Compressor de Ar", "11198", "", "", "SIM"],
@@ -674,9 +674,9 @@ var RENEM_CATALOG = [
   ["RENEM-465", "Médico Assistencial", "Audiômetro", "956", "", "", "NÃO"],
   ["RENEM-466", "Médico Assistencial", "Automação para Imuno-Histoquímica", "11672", "", "", "NÃO"],
   ["RENEM-467", "Médico Assistencial", "Autorefrator", "10563", "", "", "NÃO"],
-  ["RENEM-468", "Médico Assistencial", "Balança", "11076", "", "Balança Digital Portátil", "SIM"],
-  ["RENEM-469", "Médico Assistencial", "Balança Analítica de Precisão", "2141", "", "", "NÃO"],
-  ["RENEM-470", "Médico Assistencial", "Balança Antropométrica", "2980; 2981; 11247", "balanca pediatrica; balanca antropometrica digital; balanca digital pediatrica; balanca com regua antropometrica", "Balança Antropométrica Adulto; Balança Antropométrica Infantil; Balança Antropométrica para Obesos", "NÃO"],
+  ["RENEM-468", "Médico Assistencial", "Balança Analítica de Precisão", "2141", "", "", "NÃO"],
+  ["RENEM-469", "Médico Assistencial", "Balança Antropométrica", "2980; 2981; 11247", "balanca pediatrica; balanca antropometrica digital; balanca digital pediatrica; balanca com regua antropometrica", "Balança Antropométrica Adulto; Balança Antropométrica Infantil; Balança Antropométrica para Obesos", "NÃO"],
+  ["RENEM-470", "Médico Assistencial", "Balança Digital", "11076", "", "Balança Digital Portátil", "NÃO"],
   ["RENEM-471", "Médico Assistencial", "Balança Digital para Pessoa em Cadeira de Rodas", "11886", "", "", "NÃO"],
   ["RENEM-472", "Médico Assistencial", "Balança para Determinação de Umidade", "11280", "", "", "NÃO"],
   ["RENEM-473", "Médico Assistencial", "Balança para Laboratório", "10265", "", "", "NÃO"],
@@ -702,7 +702,7 @@ var RENEM_CATALOG = [
   ["RENEM-493", "Médico Assistencial", "Biômetro Ultrassônico/Ecobiômetro", "10987", "", "", "NÃO"],
   ["RENEM-494", "Médico Assistencial", "Biorreator/Fermentador", "1510", "", "", "NÃO"],
   ["RENEM-495", "Médico Assistencial", "BIPAP", "10463; 11241", "", "BIPAP com Monitor Gráfico", "NÃO"],
-  ["RENEM-496", "Médico Assistencial", "Bisturi", "10989; 10995", "eletrocauterio; unidade eletrocirurgica", "Bisturi Elétrico", "NÃO"],
+  ["RENEM-496", "Médico Assistencial", "Bisturi Elétrico", "10989; 10995", "eletrocauterio; unidade eletrocirurgica", "", "NÃO"],
   ["RENEM-497", "Médico Assistencial", "Bomba de Infusão", "407", "bomba infusora; bomba de infusao volumetrica; bomba de infusao peristaltica", "", "NÃO"],
   ["RENEM-498", "Médico Assistencial", "Bomba de Infusão de Seringa", "10452", "bomba de seringa", "", "NÃO"],
   ["RENEM-499", "Médico Assistencial", "Bomba Elétrica para Sucção de Leite", "246", "", "", "NÃO"],
@@ -1258,9 +1258,13 @@ function classifyOpportunity(pre, itemHits, status, publishedAt, now) {
   } else if (closed) {
     prio = 'Baixa';
     motivo = 'Processo encerrado (' + status.toLowerCase() + ')';
+  } else if (specific.length && !specific.some(function (h) { return !h.needsHealth; })) {
+    prio = open ? 'Média' : 'Baixa';
+    motivo = 'Somente itens gerais da RENEM (' + specific.map(function (h) { return h.row.produto; }).slice(0, 3).join(', ') +
+      ') em contratação da saúde; sem equipamento médico-hospitalar específico';
   } else if (specific.length && open && ageDays <= 60) {
     prio = 'Alta';
-    motivo = 'Produto identificado (' + specific.map(function (h) { return h.row.produto; }).slice(0, 3).join(', ') +
+    motivo = 'Produto identificado (' + specific.filter(function (h) { return !h.needsHealth; }).map(function (h) { return h.row.produto; }).slice(0, 3).join(', ') +
       ') em processo com propostas abertas, publicado há ' + Math.max(0, Math.round(ageDays)) + ' dia(s)';
   } else if (specific.length) {
     prio = 'Média';

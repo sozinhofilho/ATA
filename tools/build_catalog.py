@@ -17,6 +17,7 @@ def norm(s):
 TRAIL_WORDS = {'adulto', 'infantil', 'pediatrica', 'pediatrico', 'obeso', 'obesos', 'eletrica', 'eletrico',
                'mecanica', 'mecanico', 'movel', 'portatil', 'simples', 'avancado', 'estacionaria',
                'convencional', 'basico', 'basica', 'digital', 'fixo', 'analogico', 'tipo', 'fawler'}
+KEEP_FULL = {'bisturi', 'balanca', 'carro'}
 TRAIL_PHRASES = ['para telessaude', 'paratelessaude', 'para ressonancia magnetica', 'para uti',
                  'para centro cirurgico', 'para obesos', 'para obeso', 'para unidade movel de urgencia',
                  'com monitor multiparametros', 'com monitor grafico', 'tipo fawler']
@@ -43,7 +44,11 @@ def core(name):
                 toks = toks[:-k]; changed = True; break
         else:
             if len(toks) > 1 and norm(toks[-1]) in TRAIL_WORDS:
-                toks.pop(); changed = True
+                rest = toks[:-1]
+                # não deixa o nome terminando em conector ("Carro para") nem genérico demais ("Bisturi")
+                if norm(rest[-1]) in ('para', 'de', 'do', 'da', 'com', 'e', 'em', 'tipo') or norm(' '.join(rest)) in KEEP_FULL:
+                    break
+                toks = rest; changed = True
     out = ' '.join(toks).replace(' / ', '/').strip(' -/')
     return out
 
@@ -95,7 +100,7 @@ SYN = {
     'nebulizador': 'nebulizador ultrassonico',
     'concentrador de oxigenio': 'concentrador de o2',
     'mesa cirurgica': 'mesa operatoria',
-    'bisturi': 'eletrocauterio; unidade eletrocirurgica',
+    'bisturi eletrico': 'eletrocauterio; unidade eletrocirurgica',
     'cadeira odontologica completa': 'cadeira odontologica; consultorio odontologico completo',
 }
 APOIO_NAO_SAUDE = {'agogo', 'cavaquinho', 'chocalho', 'flauta', 'pandeiro', 'reco reco', 'violao', 'violino', 'triangulo',
@@ -104,7 +109,7 @@ APOIO_NAO_SAUDE = {'agogo', 'cavaquinho', 'chocalho', 'flauta', 'pandeiro', 'rec
                    'radio comunicador maritimo', 'registrador de ponto eletronico', 'gravador de audio digital',
                    'fone de ouvido monoauricular', 'expansor de audio', 'receptor quadruplo sem fio digital',
                    'sistema de retorno de audio sem fio', 'processador de audio', 'sensor inercial', 'no break de 20kva',
-                   'cilindro de co2', 'seladora', 'prensa hidraulica', 'chapa aquecedora', 'luminaria flexivel de mesa com lupa'}
+                   'cilindro de co2', 'seladora', 'trapezio', 'triangulo', 'papagaio', 'comadre', 'tambor', 'diapasao', 'disco flexor', 'prensa hidraulica', 'chapa aquecedora', 'luminaria flexivel de mesa com lupa'}
 GENERIC_SINGLE = {'balanca', 'cadeira', 'mesa', 'armario', 'monitor', 'estante', 'escada', 'bancada', 'nebulizador',
                   'arquivo', 'banqueta', 'longarina', 'fogao', 'televisor', 'telefone', 'tablet', 'scanner', 'microfone'}
 # Itens da categoria "Gerais" que são mobiliário clínico/hospitalar (não exigem contexto de saúde).

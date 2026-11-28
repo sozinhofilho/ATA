@@ -109,9 +109,13 @@ function classifyOpportunity(pre, itemHits, status, publishedAt, now) {
   } else if (closed) {
     prio = 'Baixa';
     motivo = 'Processo encerrado (' + status.toLowerCase() + ')';
+  } else if (specific.length && !specific.some(function (h) { return !h.needsHealth; })) {
+    prio = open ? 'Média' : 'Baixa';
+    motivo = 'Somente itens gerais da RENEM (' + specific.map(function (h) { return h.row.produto; }).slice(0, 3).join(', ') +
+      ') em contratação da saúde; sem equipamento médico-hospitalar específico';
   } else if (specific.length && open && ageDays <= 60) {
     prio = 'Alta';
-    motivo = 'Produto identificado (' + specific.map(function (h) { return h.row.produto; }).slice(0, 3).join(', ') +
+    motivo = 'Produto identificado (' + specific.filter(function (h) { return !h.needsHealth; }).map(function (h) { return h.row.produto; }).slice(0, 3).join(', ') +
       ') em processo com propostas abertas, publicado há ' + Math.max(0, Math.round(ageDays)) + ' dia(s)';
   } else if (specific.length) {
     prio = 'Média';
