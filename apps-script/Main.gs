@@ -264,6 +264,7 @@ function processRecords_(st, cfg, store, matcher, list, now) {
       if (idx != null) { if (applyDetailToRow_(store.rows[idx], rec, now)) st.stats.atualizados++; store.dirty = true; }
       return;
     }
+    rec._health = pre.health;
     candidates.push({ rec: rec, pre: pre });
   });
   if (!candidates.length) return;

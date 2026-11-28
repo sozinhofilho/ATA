@@ -2,28 +2,43 @@
 const fs = require('fs'), vm = require('vm'), path = require('path'), assert = require('assert');
 const ctx = { console, Date, JSON, Math, RegExp, Object, Array, String, Number, Utilities: { formatDate: (d) => d.toISOString().slice(0, 10).replace(/-/g, '') } };
 vm.createContext(ctx);
-for (const f of ['Config', 'Catalog', 'Classify', 'Pncp', 'Store']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../apps-script', f + '.gs'), 'utf8'), ctx);
-const m = ctx.buildMatcher(ctx.DEFAULT_CATALOG.map((d, i) => ({ id: 'C' + i, categoria: d[0], produto: d[1], sinonimos: d[2], palavras: '', ativo: true, catmat: i === 0 ? '123456' : '' })));
+for (const f of ['Config', 'CatalogData', 'Catalog', 'Classify', 'Pncp', 'Store']) vm.runInContext(fs.readFileSync(path.join(__dirname, '../apps-script', f + '.gs'), 'utf8'), ctx);
+const m = ctx.buildMatcher(ctx.defaultCatalogRows_().map((v, i) => ({ id: v[0], categoria: v[1], produto: v[2], renem: v[3], catmat: v[2] === 'Cama Hospitalar' ? '123456' : '',
+  sinonimos: v[7], palavras: v[8], ativo: true, exigeSaude: v[13] === 'SIM' })));
 let ok = 0;
 const t = (name, fn) => { fn(); ok++; console.log('ok -', name); };
-const prods = (s, code) => ctx.matchProducts(m, s, code).map(h => h.row.produto);
+const prods = (s, code) => ctx.matchProducts(m, s, code, false).map(h => h.row.produto);
 
 t('sinônimos e plural', () => {
-  assert.deepStrictEqual(prods('Aquisição de CAMAS FOWLER'), ['Cama hospitalar']);
-  assert.deepStrictEqual(prods('suportes para soro'), ['Suporte de soro']);
-  assert.deepStrictEqual(prods('Monitor multiparamétrico de sinais vitais'), ['Monitor multiparâmetro']);
-  assert.deepStrictEqual(prods('DEA - desfibrilador externo automático'), ['Desfibrilador']);
-  assert.deepStrictEqual(prods('poltrona de acompanhante reclinável'), ['Poltrona hospitalar']);
-  assert.deepStrictEqual(prods('colchões e berços aquecidos'), ['Berço hospitalar', 'Incubadora neonatal'].filter(p => prods('berços aquecidos').includes(p)));
+  assert.deepStrictEqual(prods('Aquisição de CAMAS FOWLER'), ['Cama Hospitalar']);
+  assert.deepStrictEqual(prods('suportes para soro'), ['Suporte de Soro']);
+  assert.deepStrictEqual(prods('Monitor multiparamétrico de sinais vitais'), ['Monitor Multiparâmetros']);
+  assert.ok(prods('DEA - desfibrilador externo automático').includes('DEA - Desfibrilador Externo Automático'));
+  assert.deepStrictEqual(prods('poltrona de acompanhante reclinável'), ['Poltrona Hospitalar']);
+  assert.deepStrictEqual(prods('Berços aquecidos'), ['Berço Aquecido']);
+  assert.deepStrictEqual(prods('Esfigmomanômetro infantil'), ['Esfigmomanômetro']);
+  assert.deepStrictEqual(prods('Cadeira de rodas para obeso'), ['Cadeira de Rodas']);
 });
 t('nível 1 por nome do produto e por CATMAT', () => {
   assert.strictEqual(ctx.matchProducts(m, 'cama hospitalar elétrica')[0].level, 1);
   assert.strictEqual(ctx.matchProducts(m, 'item qualquer', '123456')[0].level, 1);
   assert.strictEqual(ctx.matchProducts(m, 'cama fowler')[0].level, 2);
+  assert.strictEqual(ctx.matchProducts(m, 'Cama Hospitalar Tipo Fawler Mecânica')[0].row.renem, '765; 1002; 1981');
+});
+t('catálogo RENEM: 840 itens, produtos genéricos exigem contexto de saúde', () => {
+  const codes = ctx.RENEM_CATALOG.reduce((a, r) => a.concat(r[3] ? r[3].split('; ') : []), []);
+  assert.strictEqual(codes.length, 840);
+  // computador / ar-condicionado / cadeira só contam em contratação da saúde
+  assert.deepStrictEqual(ctx.matchProducts(m, 'Aquisição de computadores e ar condicionado', '', false).map(h => h.row.produto), []);
+  assert.ok(ctx.matchProducts(m, 'Aquisição de computadores', '', true).length);
+  assert.ok(!ctx.preClassify(m, 'Aquisição de cadeiras para a Secretaria de Educação', 'MUNICIPIO DE X').hits.length);
+  assert.ok(ctx.preClassify(m, 'Aquisição de cadeiras e armários para UBS', 'MUNICIPIO DE X').hits.length >= 2);
+  // com equipamento de saúde no mesmo processo, o genérico também conta
+  assert.strictEqual(ctx.matchProducts(m, 'camas hospitalares e televisores', '', false).length, 2);
 });
 t('falsos positivos', () => {
   assert.deepStrictEqual(prods('maçã gala para merenda escolar'), []);
-  assert.deepStrictEqual(prods('monitor de vídeo 24 polegadas'), []);
+  assert.deepStrictEqual(ctx.matchProducts(m, 'monitor de vídeo 24 polegadas', '', false), []);
   assert.deepStrictEqual(prods('incubadora de CO2 laboratório'), []);
   assert.deepStrictEqual(prods('balança de cozinha'), []);
   const pre = ctx.preClassify(m, 'Aquisição de equipamento veterinário - anestesia com ventilador mecânico', '');

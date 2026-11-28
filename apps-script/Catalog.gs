@@ -1,48 +1,11 @@
 /**
- * Catalog.gs: catálogo inicial (categorias do escopo + sinônimos), normalização de texto
- * e montagem do identificador de produtos.
+ * Catalog.gs: normalização de texto, carregamento do catálogo (aba CATALOGO, ou o catálogo RENEM
+ * padrão de CatalogData.gs) e identificação de produtos nos textos das contratações.
  *
- * O catálogo inicial NÃO é o catálogo da Minas Indústria: são categorias genéricas de
- * mobiliário e equipamentos médico-hospitalares. Códigos RENEM/CATMAT ficam vazios até
- * serem confirmados pelo proprietário (não inventamos códigos).
+ * Níveis: 1 = nome do produto RENEM (ou variação/CATMAT); 2 = sinônimo de uso comum.
+ * Produtos marcados "Exige contexto de saúde" (computador, cadeira, ar-condicionado, veículos...)
+ * só contam quando a contratação é da saúde (órgão/objeto) ou já tem outro equipamento de saúde.
  */
-
-// [Categoria, Produto, Sinônimos separados por ';', Genérico?]
-var DEFAULT_CATALOG = [
-  ['Camas e leitos', 'Cama hospitalar', 'cama fowler; cama hospitalar fowler; leito hospitalar; cama hospitalar eletrica; cama hospitalar manual; cama hospitalar mecanica; cama de parto; cama ppp; cama para uti; cama hospitalar infantil; cama hospitalar pediatrica; cama hospitalar bariatrica'],
-  ['Berços hospitalares', 'Berço hospitalar', 'berco aquecido; berco acrilico; berco hospitalar infantil; berco de acrilico; bercinho hospitalar'],
-  ['Macas', 'Maca hospitalar', 'maca de transporte; carro maca; maca retratil; maca para exame; maca para exames; maca fixa; maca ginecologica; maca de emergencia; maca para remocao; maca com grades; maca hidraulica; maca clinica; maca de resgate; maca articulada; maca para transporte'],
-  ['Carros hospitalares', 'Carro de emergência', 'carrinho de emergencia; carro de parada; carro para emergencia; carro de urgencia'],
-  ['Carros hospitalares', 'Carro de curativos', 'carrinho de curativo; carro de curativo; carro para curativo; carrinho para curativo'],
-  ['Carros hospitalares', 'Carro de medicação', 'carro de medicacao; carro para medicacao; carro de medicamentos; carro para medicamentos; carrinho de medicacao; carro de anestesia; carro para anestesia; carro de prontuario; carro hamper; hamper hospitalar; suporte de hamper; carro para instrumental; carro de transporte de materiais hospitalares; carro para roupa suja'],
-  ['Mobiliário clínico', 'Mesa de cabeceira hospitalar', 'mesa de cabeceira; mesa de refeicao hospitalar; mesa de refeicao para leito; mesa para refeicao no leito; mesa de cabeceira com mesa de refeicao'],
-  ['Mobiliário clínico', 'Mesa ginecológica', 'mesa ginecologica; mesa para exame ginecologico; mesa de parto'],
-  ['Mobiliário clínico', 'Mesa de exames', 'mesa de exame; mesa de exame clinico; mesa clinica; mesa para exame clinico; mesa auxiliar hospitalar; mesa auxiliar inox; mesa auxiliar em aco inox; mesa de mayo; mesa para instrumental; mesa de instrumental'],
-  ['Mobiliário clínico', 'Divã clínico', 'diva clinico; diva para exame; diva para exames; diva de exame'],
-  ['Mobiliário clínico', 'Biombo', 'biombo hospitalar; biombo triplo; biombo duplo'],
-  ['Mobiliário clínico', 'Escada de dois degraus', 'escada 2 degraus; escada com 2 degraus; escada com dois degraus; escadinha 2 degraus; escadinha hospitalar'],
-  ['Mobiliário clínico', 'Suporte de soro', 'suporte para soro; haste de soro; suporte de soro com rodizios'],
-  ['Mobiliário clínico', 'Mocho', 'mocho giratorio; mocho clinico; mocho hospitalar; banqueta giratoria'],
-  ['Mobiliário clínico', 'Armário vitrine', 'armario vitrine; armario vitrine hospitalar'],
-  ['Mobiliário clínico', 'Negatoscópio', 'negatoscopio'],
-  ['Mobiliário clínico', 'Foco auxiliar', 'foco clinico; foco de luz auxiliar; luminaria de exame; foco cirurgico'],
-  ['Poltronas hospitalares', 'Poltrona hospitalar', 'poltrona de acompanhante; poltrona para acompanhante; poltrona reclinavel hospitalar; poltrona hospitalar reclinavel; poltrona para coleta; cadeira de coleta; poltrona de coleta; poltrona de hemodialise; poltrona para hemodialise; poltrona para quimioterapia; poltrona reclinavel'],
-  ['Cadeiras de rodas e de banho', 'Cadeira de rodas', 'cadeira de rodas para obeso; cadeira de rodas adulto; cadeira de rodas infantil; cadeira de rodas obeso'],
-  ['Cadeiras de rodas e de banho', 'Cadeira de banho', 'cadeira higienica; cadeira para banho; cadeira de banho e higienica'],
-  ['Balanças antropométricas', 'Balança antropométrica', 'balanca pediatrica; balanca antropometrica digital; balanca digital pediatrica; balanca antropometrica adulto; balanca de bioimpedancia; balanca com regua antropometrica; antropometro; estadiometro; infantometro'],
-  ['Monitorização', 'Monitor multiparâmetro', 'monitor multiparametrico; monitor multiparametros; monitor multiparamentro; monitor de sinais vitais; monitor cardiaco; oximetro de pulso; oximetro portatil'],
-  ['Infusão', 'Bomba de infusão', 'bomba infusora; bomba de seringa; bomba de infusao volumetrica; bomba de infusao peristaltica'],
-  ['Ventilação', 'Ventilador pulmonar', 'ventilador mecanico; respirador pulmonar; ventilador de transporte; ventilador pulmonar de transporte; aparelho de anestesia; cpap; bipap'],
-  ['Cardiologia e emergência', 'Desfibrilador', 'cardioversor; desfibrilador externo automatico; dea; desfibrilador cardioversor'],
-  ['Cardiologia e emergência', 'Eletrocardiógrafo', 'aparelho de eletrocardiograma; eletrocardiografo digital; ecg de 12 canais'],
-  ['Aspiração', 'Aspirador de secreções', 'aspirador de secrecao; aspirador de secrecoes; aspirador cirurgico; aspirador de secrecao portatil'],
-  ['Diagnóstico', 'Equipamentos de diagnóstico', 'esfigmomanometro; aparelho de pressao arterial; estetoscopio; otoscopio; oftalmoscopio; laringoscopio; detector fetal; sonar doppler; doppler fetal; nebulizador; cardiotocografo; colposcopio; ultrassonografo; aparelho de ultrassom; reanimador manual; ambu'],
-  ['Emergência e neonatal', 'Incubadora neonatal', 'incubadora de transporte; incubadora para recem nascido; incubadora para rn; incubadora infantil; fototerapia; aparelho de fototerapia; berco aquecido'],
-  ['Equipamentos para UBS', 'Câmara de conservação de vacinas', 'camara de conservacao de vacinas; camara para conservacao de vacinas; camara fria para vacinas; refrigerador para vacinas; camara de vacinas; caixa termica para vacinas'],
-  ['Centro cirúrgico e esterilização', 'Autoclave', 'autoclave hospitalar; mesa cirurgica; bisturi eletrico; eletrocauterio'],
-  ['Lavanderia hospitalar', 'Lavadora hospitalar', 'lavadora extratora; lavadora de barreira; lavadora hospitalar de roupas; secadora hospitalar; secadora rotativa; centrifuga de roupas; calandra'],
-  ['Genérico hospitalar', 'Mobiliário/equipamento hospitalar (genérico)', 'mobiliario hospitalar; moveis hospitalares; equipamento hospitalar; equipamentos hospitalares; equipamento medico hospitalar; equipamentos medico hospitalares; equipamento medico assistencial; equipamentos medicos; material permanente hospitalar; mobiliario clinico; equipamentos para ubs; equipamentos para upa']
-];
 
 /** Normaliza texto: minúsculas, sem acento, sem pontuação, espaços únicos. */
 function normalizeText(s) {
@@ -79,57 +42,99 @@ function termRegex_(term) {
   return new RegExp('(?:^|\\s)' + body + '(?=\\s|$)');
 }
 
+/** Chave de índice de uma palavra (4 primeiras letras; palavras curtas inteiras). */
+function idxKey_(w) { return w.length >= 4 ? w.slice(0, 4) : w; }
+var STOP_ = ['de', 'do', 'da', 'dos', 'das', 'para', 'com', 'e', 'em', 'a', 'o', 'tipo'];
+
 /**
- * Monta o identificador a partir das linhas do catálogo (aba CATALOGO ou padrão).
- * rows: objetos {id, categoria, produto, renem, catmat, sinonimos, palavras, ativo}
+ * Monta o identificador a partir das linhas do catálogo.
+ * rows: objetos {id, categoria, produto, renem, catmat, sinonimos, palavras, ativo, exigeSaude}
  */
 function buildMatcher(rows) {
-  var entries = [];
+  var entries = [], index = {};
   rows.forEach(function (r) {
     if (r.ativo === false) return;
     var generic = /gen[eé]rico/i.test(r.categoria);
     var add = function (term, level) {
       var re = termRegex_(term);
-      if (re) entries.push({ re: re, term: term, level: level, row: r, generic: generic });
+      if (!re) return;
+      var first = normalizeText(term).split(' ').filter(function (w) { return w && STOP_.indexOf(w) < 0; })[0];
+      var e = { re: re, term: term, level: level, row: r, generic: generic };
+      entries.push(e);
+      var k = idxKey_(first);
+      (index[k] = index[k] || []).push(e);
     };
     add(r.produto.replace(/\(.*?\)/g, ''), 1);
+    String(r.palavras || '').split(/[;|\n]/).forEach(function (t) { if (t.trim()) add(t.replace(/\(.*?\)/g, '').trim(), 1); });
     String(r.sinonimos || '').split(/[;|\n]/).forEach(function (t) { if (t.trim()) add(t.trim(), 2); });
-    String(r.palavras || '').split(/[;|\n]/).forEach(function (t) { if (t.trim()) add(t.trim(), 2); });
   });
   var catmatIndex = {};
   rows.forEach(function (r) {
     String(r.catmat || '').split(/[;,\s]+/).forEach(function (c) { if (/^\d+$/.test(c)) catmatIndex[c] = r; });
   });
-  return { entries: entries, catmat: catmatIndex };
+  return { entries: entries, index: index, catmat: catmatIndex };
 }
 
 /**
  * Procura produtos do catálogo em um texto.
- * @return {Array<{row:Object, level:number, term:string, generic:boolean}>} um por produto.
+ * @param healthCtx true se a contratação é da área da saúde (libera produtos "Exige contexto de saúde").
+ *        Se omitido, os produtos que exigem contexto voltam marcados com needsHealth (use filterByHealth_).
+ * @return {Array<{row:Object, level:number, term:string, generic:boolean, needsHealth:boolean}>}
  */
-function matchProducts(matcher, text, catmatCode) {
-  var t = ' ' + normalizeText(text) + ' ';
+function matchProducts(matcher, text, catmatCode, healthCtx) {
+  var norm = normalizeText(text);
+  var t = ' ' + norm + ' ';
   var byProduct = {};
   if (catmatCode && matcher.catmat[String(catmatCode)]) {
     var rc = matcher.catmat[String(catmatCode)];
-    byProduct[rc.id] = { row: rc, level: 1, term: 'CATMAT ' + catmatCode, generic: false };
+    byProduct[rc.id] = { row: rc, level: 1, term: 'CATMAT ' + catmatCode, generic: false, needsHealth: !!rc.exigeSaude };
   }
-  matcher.entries.forEach(function (e) {
-    if (!e.re.test(t)) return;
+  var seenKey = {}, cands = [];
+  norm.split(' ').forEach(function (w) {
+    [w, w.replace(/s$/, '')].forEach(function (x) {
+      var k = idxKey_(x);
+      if (x && !seenKey[k] && matcher.index[k]) { seenKey[k] = true; cands = cands.concat(matcher.index[k]); }
+    });
+  });
+  var spans = [];
+  cands.forEach(function (e) {
+    var mm = e.re.exec(t);
+    if (!mm) return;
+    var sp = { a: mm.index, b: mm.index + mm[0].length, id: e.row.id };
+    spans.push(sp);
     var cur = byProduct[e.row.id];
-    if (!cur || e.level < cur.level) byProduct[e.row.id] = { row: e.row, level: e.level, term: e.term, generic: e.generic };
+    if (!cur || e.level < cur.level) byProduct[e.row.id] = { row: e.row, level: e.level, term: e.term, generic: e.generic, needsHealth: !!e.row.exigeSaude, spans: [] };
+    byProduct[e.row.id].spans.push(sp);
+  });
+  // Termo contido num termo maior de outro produto ("cadeira" em "cadeira de rodas") não conta.
+  Object.keys(byProduct).forEach(function (id) {
+    var own = byProduct[id].spans;
+    if (!own || !own.length) return;  // CATMAT
+    var allInside = own.every(function (s1) {
+      return spans.some(function (s2) { return s2.id !== id && s2.a <= s1.a && s2.b >= s1.b && (s2.b - s2.a) > (s1.b - s1.a); });
+    });
+    if (allInside) delete byProduct[id];
   });
   var out = Object.keys(byProduct).map(function (k) { return byProduct[k]; });
   // Se houver produto específico, o genérico é redundante.
   if (out.some(function (h) { return !h.generic; })) out = out.filter(function (h) { return !h.generic; });
+  if (healthCtx !== undefined) out = filterByHealth_(out, healthCtx);
   return out;
 }
 
-/** Linhas padrão do catálogo no formato da aba. */
+/** Remove produtos que exigem contexto de saúde quando a contratação não é da saúde. */
+function filterByHealth_(hits, healthCtx) {
+  var strong = hits.some(function (h) { return !h.needsHealth && !h.generic; });
+  if (healthCtx || strong) return hits;
+  return hits.filter(function (h) { return !h.needsHealth; });
+}
+
+/** Linhas padrão do catálogo (RENEM) no formato da aba CATALOGO. */
 function defaultCatalogRows_() {
-  return DEFAULT_CATALOG.map(function (d, i) {
-    return ['CAT-' + ('00' + (i + 1)).slice(-3), d[0], d[1], '', '', '', '', d[2], '', 'SIM',
-      'Categorias iniciais do escopo do projeto', '', 'Código RENEM/CATMAT a confirmar'];
+  return RENEM_CATALOG.map(function (d) {
+    return [d[0], d[1], d[2], d[3], '', '', '', d[4], d[5], 'SIM',
+      d[0].indexOf('RENEM') === 0 ? 'Catálogo RENEM (equipamentosrenem.com.br, 28/11/2026)' : 'Família genérica (oportunidade contextual)',
+      '', '', d[6]];
   });
 }
 
@@ -143,7 +148,8 @@ function loadProductCatalog() {
     return {
       id: String(v[0] || v[2]), categoria: String(v[1] || ''), produto: String(v[2]),
       renem: String(v[3] || ''), catmat: String(v[4] || ''), sinonimos: String(v[7] || ''),
-      palavras: String(v[8] || ''), ativo: !/^(n|nao|não|no|false|0|inativo)$/i.test(String(v[9]).trim())
+      palavras: String(v[8] || ''), ativo: !/^(n|nao|não|no|false|0|inativo)$/i.test(String(v[9]).trim()),
+      exigeSaude: /^(s|sim|y|yes|true|1)$/i.test(String(v[13] || '').trim())
     };
   });
   return buildMatcher(rows);

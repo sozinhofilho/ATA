@@ -101,7 +101,7 @@ function detailUrl_(cnpj, ano, seq) {
 }
 
 /** Analisa os itens de uma contratação e devolve os produtos encontrados + resumo. */
-function analyzeItems_(matcher, items) {
+function analyzeItems_(matcher, items, healthCtx) {
   var hits = [];
   var perProduct = {};
   var catmat = {};
@@ -112,7 +112,7 @@ function analyzeItems_(matcher, items) {
     hs.forEach(function (h) {
       hits.push(h);
       var key = h.row.produto;
-      var p = perProduct[key] || (perProduct[key] = { qtd: 0, un: '', valor: 0, n: 0 });
+      var p = perProduct[key] || (perProduct[key] = { qtd: 0, un: '', valor: 0, n: 0, needsHealth: h.needsHealth });
       p.qtd += Number(it.quantidade) || 0;
       p.un = p.un || it.unidadeMedida || '';
       p.valor += Number(it.valorTotal) || 0;
@@ -120,6 +120,11 @@ function analyzeItems_(matcher, items) {
       if (code) catmat[code] = true;
     });
   });
+  // Produtos que exigem contexto de saúde só valem em contratação da saúde ou junto de equipamento de saúde.
+  if (!healthCtx && !hits.some(function (h) { return !h.needsHealth && !h.generic; })) {
+    hits = hits.filter(function (h) { return !h.needsHealth; });
+    Object.keys(perProduct).forEach(function (k) { if (perProduct[k].needsHealth) delete perProduct[k]; });
+  }
   var resumo = Object.keys(perProduct).map(function (k) {
     var p = perProduct[k];
     var q = p.qtd ? (Math.round(p.qtd * 100) / 100) + ' ' + (p.un || 'un').toLowerCase() : 'qtd n/d';
@@ -143,7 +148,7 @@ function fetchItemsFor_(matcher, recs, concurrency) {
   recs.forEach(function (r, i) {
     var x = res[i];
     if (x && x.ok) {
-      out[r.id] = analyzeItems_(matcher, Array.isArray(x.data) ? x.data : []);
+      out[r.id] = analyzeItems_(matcher, Array.isArray(x.data) ? x.data : [], !!r._health);
     } else {
       var e = []; e._itemsError = true; out[r.id] = e;
     }

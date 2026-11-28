@@ -40,8 +40,9 @@ var COLS = [
 var C = {};
 COLS.forEach(function (n, i) { C[n] = i; });
 
+// 'Palavras-chave' guarda os nomes RENEM das variações (contam como nível 1).
 var CAT_COLS = ['ID', 'Categoria', 'Produto', 'Código RENEM', 'Código CATMAT', 'Marca', 'Modelo',
-  'Sinônimos', 'Palavras-chave', 'Produto ativo', 'Fonte', 'Ata vigente', 'Observações'];
+  'Sinônimos', 'Palavras-chave', 'Produto ativo', 'Fonte', 'Ata vigente', 'Observações', 'Exige contexto de saúde'];
 
 var LOG_COLS = ['Data/hora', 'Execução', 'Fonte', 'Etapa', 'Registros', 'Resultado', 'Detalhes'];
 

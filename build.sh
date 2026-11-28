@@ -7,7 +7,7 @@ out=dist/NexusRadar.gs
 {
   echo "// NEXUS RADAR — Oportunidades Públicas Hospitalares"
   echo "// Arquivo único gerado por build.sh em $(date -u +%Y-%m-%d). Cole TODO o conteúdo no arquivo Código.gs do Apps Script."
-  for f in Config Http Catalog Classify Pncp Store Report Main; do
+  for f in Config Http CatalogData Catalog Classify Pncp Store Report Main; do
     echo; echo "// ======================= $f.gs ======================="
     cat "apps-script/$f.gs"
   done

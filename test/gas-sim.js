@@ -122,7 +122,7 @@ const ctx = {
 };
 vm.createContext(ctx);
 const dir = path.join(__dirname, '..', 'apps-script');
-for (const f of ['Config.gs', 'Http.gs', 'Catalog.gs', 'Classify.gs', 'Pncp.gs', 'Store.gs', 'Report.gs', 'Main.gs']) {
+for (const f of ['Config.gs', 'Http.gs', 'CatalogData.gs', 'Catalog.gs', 'Classify.gs', 'Pncp.gs', 'Store.gs', 'Report.gs', 'Main.gs']) {
   vm.runInContext(fs.readFileSync(path.join(dir, f), 'utf8'), ctx, { filename: f });
 }
 if (args.includes('--debug')) {

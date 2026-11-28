@@ -37,16 +37,16 @@ var STRUCT_RE_ = /(estruturacao|implantacao|ampliacao|aparelhamento|equipar|equi
 function preClassify(matcher, objeto, orgaoTexto) {
   var o = normalizeText(objeto);
   var org = normalizeText(orgaoTexto);
-  var hits = matchProducts(matcher, objeto);
-  if (HARD_EXCLUDE_RE_.test(o)) return { hits: [], contextual: false, excluded: true, service: false };
+  if (HARD_EXCLUDE_RE_.test(o)) return { hits: [], contextual: false, excluded: true, service: false, health: false };
+  var health = HEALTH_RE_.test(o) || HEALTH_RE_.test(org);
+  var hits = matchProducts(matcher, objeto, '', health);
   var service = SERVICE_RE_.test(o) && !ACQUIRE_RE_.test(o);
   var parts = PARTS_RE_.test(o) && !NEW_EQUIP_RE_.test(o);
   var excluded = EXCLUDE_RE_.test(o);
-  var health = HEALTH_RE_.test(o) || HEALTH_RE_.test(org);
   var contextual = !hits.length && health && (EQUIP_RE_.test(o) || (STRUCT_RE_.test(o) && ACQUIRE_RE_.test(o)));
   // Processo misto (ex.: medicamentos + equipamentos): mantém se houver equipamento no objeto.
   if (excluded && EQUIP_RE_.test(o)) excluded = false;
-  return { hits: hits, contextual: contextual && !excluded, excluded: excluded && !hits.length, service: service, parts: parts };
+  return { hits: hits, contextual: contextual && !excluded, excluded: excluded && !hits.length, service: service, parts: parts, health: health };
 }
 
 /** Situação interpretada a partir dos dados oficiais do PNCP. */
